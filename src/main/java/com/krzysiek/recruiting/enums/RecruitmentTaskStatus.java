@@ -1,4 +1,4 @@
-package com.krzysiek.recruiting.model;
+package com.krzysiek.recruiting.enums;
 
 public enum RecruitmentTaskStatus {
     PENDING,

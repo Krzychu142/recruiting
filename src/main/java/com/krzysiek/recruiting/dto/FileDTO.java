@@ -1,6 +1,6 @@
 package com.krzysiek.recruiting.dto;
 
-import com.krzysiek.recruiting.model.FileType;
+import com.krzysiek.recruiting.enums.FileType;
 
 public record FileDTO(
         Long id,

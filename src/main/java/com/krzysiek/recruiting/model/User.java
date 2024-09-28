@@ -1,5 +1,6 @@
 package com.krzysiek.recruiting.model;
 
+import com.krzysiek.recruiting.enums.OAuthProvider;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

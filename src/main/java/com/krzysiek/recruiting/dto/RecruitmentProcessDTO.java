@@ -1,7 +1,7 @@
 package com.krzysiek.recruiting.dto;
 
-import com.krzysiek.recruiting.model.RecruitmentProcessStatus;
-import com.krzysiek.recruiting.model.RecruitmentTaskStatus;
+import com.krzysiek.recruiting.enums.RecruitmentProcessStatus;
+import com.krzysiek.recruiting.enums.RecruitmentTaskStatus;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 

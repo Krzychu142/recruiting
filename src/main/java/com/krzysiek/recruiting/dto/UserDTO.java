@@ -1,6 +1,6 @@
 package com.krzysiek.recruiting.dto;
 
-import com.krzysiek.recruiting.model.OAuthProvider;
+import com.krzysiek.recruiting.enums.OAuthProvider;
 import java.util.Set;
 
 public record UserDTO(

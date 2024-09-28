@@ -1,7 +1,7 @@
 package com.krzysiek.recruiting;
 
 import com.krzysiek.recruiting.dto.FileDTO;
-import com.krzysiek.recruiting.model.FileType;
+import com.krzysiek.recruiting.enums.FileType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
