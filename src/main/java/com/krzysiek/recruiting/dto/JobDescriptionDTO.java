@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 public record JobDescriptionDTO(
         Long id,
+        String positionName,
         BigDecimal minSalary,
         BigDecimal maxSalary,
         TypeOfContract[] possibleTypeOfContract,

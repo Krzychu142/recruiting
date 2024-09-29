@@ -2,7 +2,6 @@ package com.krzysiek.recruiting.dto;
 
 import com.krzysiek.recruiting.enums.RecruitmentProcessStatus;
 import com.krzysiek.recruiting.enums.RecruitmentTaskStatus;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record RecruitmentProcessDTO(
@@ -11,14 +10,10 @@ public record RecruitmentProcessDTO(
         String companyName,
         LocalDate startDate,
         LocalDate endDate,
-        BigDecimal offeredSalaryMin,
-        BigDecimal offeredSalaryMax,
-        String position,
-        String requirements,
+        Long jobDescriptionId,
         Long cvId,
         Boolean hasRecruitmentTask,
         RecruitmentTaskStatus recruitmentTaskStatus,
         LocalDate taskDeadline,
-        LocalDate evaluationDeadline,
         RecruitmentProcessStatus status
 ) {}
