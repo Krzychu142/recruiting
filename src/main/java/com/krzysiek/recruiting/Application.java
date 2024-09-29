@@ -14,8 +14,6 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class Application {
 
-	@Autowired
-	private EmailService emailService;
 	private static final Logger log = LoggerFactory.getLogger(Application.class);
 
 	public static void main(String[] args) {
@@ -26,9 +24,8 @@ public class Application {
 	@Bean
 	CommandLineRunner runner() {
 		return args -> {
-			emailService.sendSimpleMessage("kustosz142@gmail.com", "Test message", "text");
-//			FileDTO  fileDto = new FileDTO(1L, 2L, FileType.CV, "link");
-//			System.out.println(fileDto);
+			FileDTO  fileDto = new FileDTO(1L, 2L, FileType.CV, "link");
+			System.out.println(fileDto);
 		};
 	}
 }
