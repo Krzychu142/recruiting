@@ -1,9 +1,9 @@
 package com.krzysiek.recruiting.model;
 
-import com.krzysiek.recruiting.enums.OAuthProvider;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,11 +24,9 @@ public class User {
     @Column
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    private OAuthProvider oauthProvider;
-
-    @Column
-    private String oauthId;
+    @Column(name = "is_confirmed")
+    @ColumnDefault("false")
+    private Boolean isConfirmed;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<File> files = new HashSet<>();
