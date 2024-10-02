@@ -1,6 +1,8 @@
 package com.krzysiek.recruiting.controller;
 
+import com.krzysiek.recruiting.dto.FieldErrorDTO;
 import com.krzysiek.recruiting.dto.RegisterRequestDTO;
+import com.krzysiek.recruiting.exception.NonIdenticalVariablesException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,15 +24,11 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO request){
-//        if (!request.password().equals(request.confirmedPassword())) {
-//            throw new MethodArgumentNotValidException();
-//        }
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO request) throws NonIdenticalVariablesException {
+        if (!request.password().equals(request.confirmedPassword())) {
+            throw new NonIdenticalVariablesException("Password and confirmed password are different.", new FieldErrorDTO("confirmedPassword", "Confirmed password and password must be the same."));
+        }
 
-//        if (bindingResult.hasErrors()){
-////            bindingResult.getFieldError()
-//            return new ResponseEntity<>(bindingResult.getFieldError(), HttpStatus.BAD_REQUEST);
-//        }
         return new ResponseEntity<>("register", HttpStatus.OK);
     }
 }

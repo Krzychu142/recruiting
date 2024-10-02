@@ -12,23 +12,40 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;;
+import java.util.ArrayList;
 import java.util.List;
 
 
 @ControllerAdvice
 @ResponseBody
-public class GlobalException {
+public class GlobalExceptionHandler {
 
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(GlobalException.class);
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     private final EmailService emailService;
 
-    public GlobalException(EmailService emailService) {
+    public GlobalExceptionHandler(EmailService emailService) {
         this.emailService = emailService;
+    }
+
+    @ExceptionHandler(NonIdenticalVariablesException.class)
+    public ResponseEntity<ErrorResponseDTO> handleNonIdenticalVariablesException(NonIdenticalVariablesException ex, HttpServletRequest servletRequest){
+        log.error("NonIdenticalVariablesException occurred from global exception class.");
+
+        ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO();
+        errorResponseDTO.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorResponseDTO.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        errorResponseDTO.setPath(servletRequest.getRequestURI());
+        errorResponseDTO.setMessage(ex.getMessage());
+
+        List<FieldErrorDTO> fieldErrorDTOList = new ArrayList<>();
+        fieldErrorDTOList.add(ex.getFieldErrorDTO());
+
+        errorResponseDTO.setFieldErrors(fieldErrorDTOList);
+        return new ResponseEntity<>(errorResponseDTO, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDTO> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest servletRequest) {
-        String message = "An error occurred: " + ex.getMessage();
         log.error("MethodArgumentNotValidException occurred from global exception class.");
 
         List<FieldErrorDTO> allErrors = ex.getBindingResult().getFieldErrors()
@@ -37,8 +54,8 @@ public class GlobalException {
                 .toList();
 
         ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO();
-        errorResponseDTO.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        errorResponseDTO.setError(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        errorResponseDTO.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorResponseDTO.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
         errorResponseDTO.setPath(servletRequest.getRequestURI());
         errorResponseDTO.setMessage("Exception occurred from global exception class.");
         errorResponseDTO.setFieldErrors(allErrors);
@@ -48,7 +65,6 @@ public class GlobalException {
     @ExceptionHandler(Exception.class)
     // request for more information about exception
     public ResponseEntity<ErrorResponseDTO> handleGlobalException(Exception ex, WebRequest request, HttpServletRequest servletRequest) {
-        String message = "An error occurred: " + ex.getMessage();
         log.error("Exception occurred from global exception class.");
         emailService.sendErrorEmail(ex);
 
