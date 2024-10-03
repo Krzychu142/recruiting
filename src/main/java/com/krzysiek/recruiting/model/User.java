@@ -28,6 +28,9 @@ public class User {
     @ColumnDefault("false")
     private Boolean isConfirmed;
 
+    @Column(name = "confirmation_link")
+    private String confirmationLink;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<File> files = new HashSet<>();
 

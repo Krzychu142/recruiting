@@ -8,16 +8,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.request.WebRequest;;
-import java.util.ArrayList;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 import java.util.List;
 
 
-@ControllerAdvice
-@ResponseBody
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
@@ -25,23 +22,6 @@ public class GlobalExceptionHandler {
 
     public GlobalExceptionHandler(EmailService emailService) {
         this.emailService = emailService;
-    }
-
-    @ExceptionHandler(NonIdenticalVariablesException.class)
-    public ResponseEntity<ErrorResponseDTO> handleNonIdenticalVariablesException(NonIdenticalVariablesException ex, HttpServletRequest servletRequest){
-        log.error("NonIdenticalVariablesException occurred from global exception class.");
-
-        ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO();
-        errorResponseDTO.setStatus(HttpStatus.BAD_REQUEST.value());
-        errorResponseDTO.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
-        errorResponseDTO.setPath(servletRequest.getRequestURI());
-        errorResponseDTO.setMessage(ex.getMessage());
-
-        List<FieldErrorDTO> fieldErrorDTOList = new ArrayList<>();
-        fieldErrorDTOList.add(ex.getFieldErrorDTO());
-
-        errorResponseDTO.setFieldErrors(fieldErrorDTOList);
-        return new ResponseEntity<>(errorResponseDTO, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

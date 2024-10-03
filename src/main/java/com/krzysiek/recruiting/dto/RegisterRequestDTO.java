@@ -18,8 +18,6 @@ public record RegisterRequestDTO(
         @Size(min = 6, message = "Confirm password must be at least 6 characters.")
         String confirmedPassword
 ) {
-
-        // that was discovered by me after write my own NonIdenticalVariablesException and handled it in GlobalexceptionHandler, pure me
         @AssertTrue(message = "Passwords do not match.")
         public boolean isPasswordsMatching() {
                 if (password == null || confirmedPassword == null) {
