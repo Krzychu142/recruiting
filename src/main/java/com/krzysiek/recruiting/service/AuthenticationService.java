@@ -19,15 +19,22 @@ public class AuthenticationService {
         this.userRepository = userRepository;
     }
 
-    public void register(RegisterRequestDTO registerRequestDTO){
-        System.out.println(registerRequestDTO.email());
-        System.out.println(passwordEncoder.encode(registerRequestDTO.password()));
+    public void register(RegisterRequestDTO registerRequestDTO) throws RuntimeException {
+        //System.out.println(registerRequestDTO.email());
+        //System.out.println(passwordEncoder.encode(registerRequestDTO.password()));
 
         Optional<User> optionalUser = userRepository.findByEmail(registerRequestDTO.email());
-
         if (optionalUser.isPresent()) {
 //            throw new
             System.out.println("Test");
+        }
+
+        try {
+            User user = new User(registerRequestDTO.email(), passwordEncoder.encode(registerRequestDTO.password()));
+            userRepository.save(user);
+            System.out.println("User should be inserted");
+        } catch (Exception ex) {
+            throw new RuntimeException("Error occurred while registering the user: \"" + ex.getMessage());
         }
 
     }

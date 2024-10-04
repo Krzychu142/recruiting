@@ -3,7 +3,6 @@ package com.krzysiek.recruiting.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,7 +24,6 @@ public class User {
     private String password;
 
     @Column(name = "is_confirmed")
-    @ColumnDefault("false")
     private Boolean isConfirmed;
 
     @Column(name = "confirmation_link")
@@ -36,5 +34,15 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<RecruitmentProcess> recruitmentProcesses = new HashSet<>();
+
+    // JPA required
+    public User(){}
+
+    public User(String email, String password){
+        this.email = email;
+        this.password = password;
+        this.isConfirmed = false;
+        this.confirmationLink = null;
+    }
 
 }

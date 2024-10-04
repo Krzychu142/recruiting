@@ -27,7 +27,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO request) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO request) throws RuntimeException {
         authenticationService.register(request);
         return new ResponseEntity<>("register", HttpStatus.OK);
     }
