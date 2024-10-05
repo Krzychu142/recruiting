@@ -7,8 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.List;
-
 @RestControllerAdvice
 public class AuthenticationServiceExceptionHandler {
 
@@ -16,9 +14,11 @@ public class AuthenticationServiceExceptionHandler {
     public ResponseEntity<ErrorResponseDTO>  handleUserAlreadyExistsException(UserAlreadyExistsException ex, HttpServletRequest servletRequest){
         ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(
                 HttpStatus.CONFLICT.value(),
-                HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                "Exception occurred from AuthenticationServiceExceptionHandler. " + ex.getMessage(),
-                servletRequest.getRequestURI()
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                ex.getMessage(),
+                servletRequest.getRequestURI(),
+                ex.getClass().getSimpleName(),
+                this.getClass().getSimpleName()
         );
         return new ResponseEntity<>(errorResponseDTO, HttpStatus.CONFLICT);
     }

@@ -26,8 +26,8 @@ public class User {
     @Column(name = "is_confirmed")
     private Boolean isConfirmed;
 
-    @Column(name = "confirmation_link")
-    private String confirmationLink;
+    @Column(name = "confirmation_token")
+    private String confirmationToken;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<File> files = new HashSet<>();
@@ -42,7 +42,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.isConfirmed = false;
-        this.confirmationLink = null;
+        this.confirmationToken = null;
     }
 
 }

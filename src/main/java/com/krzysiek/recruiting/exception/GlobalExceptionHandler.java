@@ -36,8 +36,10 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                "Exception occurred from GlobalExceptionHandler." + ex.getMessage(),
-                servletRequest.getRequestURI()
+                ex.getMessage(),
+                servletRequest.getRequestURI(),
+                ex.getClass().getSimpleName(),
+                this.getClass().getSimpleName()
         );
         errorResponseDTO.setFieldErrors(allErrors);
         return new ResponseEntity<>(errorResponseDTO, HttpStatus.BAD_REQUEST);
@@ -51,8 +53,10 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-                "Exception occurred from GlobalExceptionHandler." + ex.getMessage(),
-                servletRequest.getRequestURI()
+                ex.getMessage(),
+                servletRequest.getRequestURI(),
+                ex.getClass().getSimpleName(),
+                this.getClass().getSimpleName()
         );
         return new ResponseEntity<>(errorResponseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
     }

@@ -13,6 +13,8 @@ public class ErrorResponseDTO {
     private String error;
     private String message;
     private String path;
+    private String exceptionClassName;
+    private String handlerClassName;
     @Setter
     private List<FieldErrorDTO> fieldErrors;
 
@@ -20,12 +22,14 @@ public class ErrorResponseDTO {
         this.timestamp = LocalDateTime.now();
     }
 
-    public ErrorResponseDTO(int status, String error, String message, String path) {
+    public ErrorResponseDTO(int status, String error, String message, String path, String exceptionClassName, String handlerClassName) {
         this.timestamp = LocalDateTime.now();
         this.status = status;
         this.error = error;
         this.message = message;
         this.path = path;
+        this.exceptionClassName = exceptionClassName;
+        this.handlerClassName = handlerClassName;
     }
 
 }
