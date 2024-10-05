@@ -1,8 +1,10 @@
 package com.krzysiek.recruiting.model;
 
+import com.krzysiek.recruiting.enums.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -29,6 +31,10 @@ public class User {
     @Column(name = "confirmation_token")
     private String confirmationToken;
 
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<File> files = new HashSet<>();
 
@@ -38,11 +44,11 @@ public class User {
     // JPA required
     public User(){}
 
-    public User(String email, String password){
+    public User(String email, String password, String confirmationToken){
         this.email = email;
         this.password = password;
         this.isConfirmed = false;
-        this.confirmationToken = null;
+        this.confirmationToken = confirmationToken;
     }
 
 }
