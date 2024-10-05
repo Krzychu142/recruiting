@@ -14,12 +14,12 @@ public class AuthenticationServiceExceptionHandler {
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ErrorResponseDTO>  handleUserAlreadyExistsException(UserAlreadyExistsException ex, HttpServletRequest servletRequest){
-        // TODO: repeated segments should be moved into constructor - this fields will be for sure, only list of fields should be optional - setters
-        ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO();
-        errorResponseDTO.setStatus(HttpStatus.CONFLICT.value());
-        errorResponseDTO.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
-        errorResponseDTO.setMessage("Exception occurred from AuthenticationServiceExceptionHandler. " + ex.getMessage());
-        errorResponseDTO.setPath(servletRequest.getRequestURI());
+        ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                "Exception occurred from AuthenticationServiceExceptionHandler. " + ex.getMessage(),
+                servletRequest.getRequestURI()
+        );
         return new ResponseEntity<>(errorResponseDTO, HttpStatus.CONFLICT);
     }
 
