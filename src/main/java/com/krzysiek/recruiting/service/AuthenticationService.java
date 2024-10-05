@@ -27,8 +27,11 @@ public class AuthenticationService {
         }
 
         try {
-            // I need to generate there token and pass it as confirmation_token
-            //
+            // TODO: generate confirmed token, and save it (it should be equal only 2h for example - that's also good point to create CRON job or trigger to handled not confirmed accounts)
+            // TODO: create link with this token
+            // TODO: send link via email
+            // TODO: create endpoint to get this token from email
+            // TODO: make validation of token
             User user = new User(registerRequestDTO.email(), passwordEncoder.encode(registerRequestDTO.password()));
             userRepository.save(user);
         } catch (Exception ex) {
