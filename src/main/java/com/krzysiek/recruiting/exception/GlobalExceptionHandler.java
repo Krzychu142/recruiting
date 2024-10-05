@@ -33,11 +33,12 @@ public class GlobalExceptionHandler {
                 .map(fieldError -> new FieldErrorDTO(fieldError.getField(), fieldError.getDefaultMessage()))
                 .toList();
 
+        // TODO: repeated segments should be moved into constructor - this fields will be for sure, only list of fields should be optional - setters
         ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO();
         errorResponseDTO.setStatus(HttpStatus.BAD_REQUEST.value());
         errorResponseDTO.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
         errorResponseDTO.setPath(servletRequest.getRequestURI());
-        errorResponseDTO.setMessage("Exception occurred from global exception class.");
+        errorResponseDTO.setMessage("Exception occurred from GlobalExceptionHandler." + ex.getMessage());
         errorResponseDTO.setFieldErrors(allErrors);
         return new ResponseEntity<>(errorResponseDTO, HttpStatus.BAD_REQUEST);
     }
@@ -48,11 +49,12 @@ public class GlobalExceptionHandler {
         log.error("Exception occurred from global exception class.");
         emailService.sendErrorEmail(ex);
 
+        // TODO: repeated segments should be moved into constructor - this fields will be for sure, only list of fields should be optional - setters
         ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO();
         errorResponseDTO.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorResponseDTO.setError(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
         errorResponseDTO.setPath(servletRequest.getRequestURI());
-        errorResponseDTO.setMessage("Exception occurred from global exception class.");
+        errorResponseDTO.setMessage("Exception occurred from GlobalExceptionHandler." + ex.getMessage());
         return new ResponseEntity<>(errorResponseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

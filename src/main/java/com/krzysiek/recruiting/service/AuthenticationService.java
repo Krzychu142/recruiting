@@ -1,6 +1,7 @@
 package com.krzysiek.recruiting.service;
 
 import com.krzysiek.recruiting.dto.RegisterRequestDTO;
+import com.krzysiek.recruiting.exception.UserAlreadyExistsException;
 import com.krzysiek.recruiting.model.User;
 import com.krzysiek.recruiting.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,24 +20,23 @@ public class AuthenticationService {
         this.userRepository = userRepository;
     }
 
-    public void register(RegisterRequestDTO registerRequestDTO) throws RuntimeException {
-        //System.out.println(registerRequestDTO.email());
-        //System.out.println(passwordEncoder.encode(registerRequestDTO.password()));
-
+    public void register(RegisterRequestDTO registerRequestDTO) throws RuntimeException, UserAlreadyExistsException {
         Optional<User> optionalUser = userRepository.findByEmail(registerRequestDTO.email());
         if (optionalUser.isPresent()) {
-//            throw new
-            System.out.println("Test");
+            throw new UserAlreadyExistsException("User with this email already exists.");
         }
 
         try {
             User user = new User(registerRequestDTO.email(), passwordEncoder.encode(registerRequestDTO.password()));
             userRepository.save(user);
-            System.out.println("User should be inserted");
+            //System.out.println("User should be inserted");
         } catch (Exception ex) {
             throw new RuntimeException("Error occurred while registering the user: \"" + ex.getMessage());
         }
-
     }
+
+    //TODO: login
+    //TODO: resetPassword
+    //TODO: confirmEmail
 
 }
