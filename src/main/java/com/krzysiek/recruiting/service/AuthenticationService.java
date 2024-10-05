@@ -39,6 +39,10 @@ public class AuthenticationService {
         }
     }
 
+    private String generateConfirmedToken(){
+        return "Token";
+    }
+
     //TODO: login
     //TODO: resetPassword
     //TODO: confirmEmail
