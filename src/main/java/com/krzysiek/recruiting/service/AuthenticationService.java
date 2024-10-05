@@ -28,9 +28,9 @@ public class AuthenticationService {
 
         try {
             // I need to generate there token and pass it as confirmation_token
+            //
             User user = new User(registerRequestDTO.email(), passwordEncoder.encode(registerRequestDTO.password()));
             userRepository.save(user);
-            //System.out.println("User should be inserted");
         } catch (Exception ex) {
             throw new RuntimeException("Error occurred while registering the user: \"" + ex.getMessage());
         }
