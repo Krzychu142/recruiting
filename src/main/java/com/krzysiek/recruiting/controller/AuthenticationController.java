@@ -1,8 +1,10 @@
 package com.krzysiek.recruiting.controller;
 
 import com.krzysiek.recruiting.dto.RegisterRequestDTO;
+import com.krzysiek.recruiting.dto.RegisterResponseDTO;
 import com.krzysiek.recruiting.exception.UserAlreadyExistsException;
 import com.krzysiek.recruiting.service.AuthenticationService;
+import io.jsonwebtoken.JwtException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +30,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO request) throws RuntimeException, UserAlreadyExistsException {
-        authenticationService.register(request);
-        return new ResponseEntity<>("register", HttpStatus.OK);
+    public ResponseEntity<RegisterResponseDTO> register(@Valid @RequestBody RegisterRequestDTO request) throws RuntimeException {
+        RegisterResponseDTO registerResponseDTO = authenticationService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(registerResponseDTO);
     }
 }

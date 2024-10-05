@@ -3,6 +3,7 @@ package com.krzysiek.recruiting.exception;
 import com.krzysiek.recruiting.dto.ErrorResponseDTO;
 import com.krzysiek.recruiting.dto.FieldErrorDTO;
 import com.krzysiek.recruiting.service.EmailService;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +35,11 @@ public class GlobalExceptionHandler extends BaseExceptionHandler{
         errorResponseDTO.setFieldErrors(allErrors);
 
         return handleException(errorResponseDTO);
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ErrorResponseDTO> handleJwtException(JwtException ex, HttpServletRequest servletRequest){
+        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.UNAUTHORIZED));
     }
 
     @ExceptionHandler(Exception.class)
