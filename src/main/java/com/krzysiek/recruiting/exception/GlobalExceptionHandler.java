@@ -5,6 +5,7 @@ import com.krzysiek.recruiting.dto.FieldErrorDTO;
 import com.krzysiek.recruiting.service.EmailService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -24,7 +25,7 @@ public class GlobalExceptionHandler extends BaseExceptionHandler{
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponseDTO> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest servletRequest) {
+    public ResponseEntity<ErrorResponseDTO> handelMethodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletRequest servletRequest) {
 
         List<FieldErrorDTO> allErrors = ex.getBindingResult().getFieldErrors()
                 .stream()
@@ -34,6 +35,12 @@ public class GlobalExceptionHandler extends BaseExceptionHandler{
         ErrorResponseDTO errorResponseDTO = getErrorResponseDTO(ex, servletRequest, HttpStatus.BAD_REQUEST);
         errorResponseDTO.setFieldErrors(allErrors);
 
+        return handleException(errorResponseDTO);
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorResponseDTO> handelValidationException(ValidationException ex, HttpServletRequest servletRequest){
+        ErrorResponseDTO errorResponseDTO = getErrorResponseDTO(ex, servletRequest, HttpStatus.BAD_REQUEST);
         return handleException(errorResponseDTO);
     }
 

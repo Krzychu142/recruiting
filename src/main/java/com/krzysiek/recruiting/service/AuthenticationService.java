@@ -1,5 +1,6 @@
 package com.krzysiek.recruiting.service;
 
+import com.krzysiek.recruiting.dto.BaseResponseDTO;
 import com.krzysiek.recruiting.dto.RegisterRequestDTO;
 import com.krzysiek.recruiting.dto.RegisterResponseDTO;
 import com.krzysiek.recruiting.exception.UserAlreadyExistsException;
@@ -7,6 +8,7 @@ import com.krzysiek.recruiting.exception.UserNotFoundException;
 import com.krzysiek.recruiting.model.User;
 import com.krzysiek.recruiting.repository.UserRepository;
 import io.jsonwebtoken.JwtException;
+import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -60,20 +62,28 @@ public class AuthenticationService {
         }
     }
 
-    public void confirmEmail(String token){
+    public BaseResponseDTO confirmEmail(String token){
         try {
             String email = jwtService.extractEmail(token);
             Optional<User> optionalUser = userRepository.findByEmail(email);
             if (optionalUser.isEmpty()) {
                 throw new UserNotFoundException("Bad token - owner of this token not found.");
             }
-            // try to find user with this email
-            // compare tokens
-            // if tokens are not the same - throw error
-            // tokens are same - set confirmed on true and delete token
-            // send message about success - now user can login
-        }
-        catch (JpaSystemException ex) {
+            User user = optionalUser.get();
+            if (!user.getConfirmationToken().equals(token)) {
+                throw new ValidationException("Tokens are not equal.");
+            }
+            Long userId = user.getId();
+            int rowsUpdated = userRepository.updateUserFields(userId, true);
+            if (rowsUpdated != 1) {
+                throw new RuntimeException("Something goes wrong while user updating.");
+            }
+            return new BaseResponseDTO("The email has been successfully confirmed.");
+        } catch (ValidationException ex) {
+            throw new ValidationException(ex.getMessage(), ex);
+        } catch (UserNotFoundException ex) {
+            throw new UserNotFoundException(ex.getMessage());
+        } catch (JpaSystemException ex) {
             throw new RuntimeException("JPA system error: " + ex.getMessage(), ex);
         } catch (JwtException ex) {
             throw new JwtException(ex.getMessage(), ex);

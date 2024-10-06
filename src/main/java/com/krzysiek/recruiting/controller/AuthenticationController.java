@@ -1,5 +1,6 @@
 package com.krzysiek.recruiting.controller;
 
+import com.krzysiek.recruiting.dto.BaseResponseDTO;
 import com.krzysiek.recruiting.dto.RegisterRequestDTO;
 import com.krzysiek.recruiting.dto.RegisterResponseDTO;
 import com.krzysiek.recruiting.exception.UserAlreadyExistsException;
@@ -34,7 +35,8 @@ public class AuthenticationController {
 
     @GetMapping("/confirm-email")
     // When frontend will be implemented it should be moved from params into body of request.
-    public void confirmEmail(@RequestParam("token") String token) {
-        System.out.println(token);
+    public ResponseEntity<BaseResponseDTO> confirmEmail(@RequestParam("token") String token) {
+        BaseResponseDTO baseResponseDTO = authenticationService.confirmEmail(token);
+        return ResponseEntity.status(HttpStatus.OK).body(baseResponseDTO);
     }
 }

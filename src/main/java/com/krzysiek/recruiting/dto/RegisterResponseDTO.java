@@ -1,11 +1,14 @@
 package com.krzysiek.recruiting.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
 
-public record RegisterResponseDTO(
-        @NotBlank
-        Long userId,
 
-        @NotBlank
-        String message
-) {}
+@Getter
+public class RegisterResponseDTO extends BaseResponseDTO {
+        private final Long userId;
+
+        public RegisterResponseDTO(Long userId, String message) {
+                super(message);
+                this.userId = userId;
+        }
+}

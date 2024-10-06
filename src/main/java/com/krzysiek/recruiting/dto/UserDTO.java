@@ -6,6 +6,7 @@ public record UserDTO(
         Long id,
         String email,
         Boolean isConfirmed,
+        String confirmationToken,
         Set<Long> fileIds,
         Set<Long> recruitmentProcessIds
 ) {}
