@@ -39,4 +39,8 @@ public class AuthenticationController {
         BaseResponseDTO baseResponseDTO = authenticationService.confirmEmail(token);
         return ResponseEntity.status(HttpStatus.OK).body(baseResponseDTO);
     }
+
+    //TODO: reset-password
+    //TODO: logout
+
 }

@@ -92,9 +92,8 @@ public class AuthenticationService {
         }
     }
 
-    //TODO: confirmEmail
     //TODO: login
     //TODO: resetPassword
-    // TODO: create endpoint to get this token from email
+    //TODO: logout
 
 }
