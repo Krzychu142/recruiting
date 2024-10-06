@@ -59,6 +59,19 @@ public class AuthenticationService {
         }
     }
 
+    public void confirmEmail(String token){
+        try {
+            // decode token - get email and expired
+            // try to find user with this email
+            // compare tokens
+            // if tokens are not the same - throw error
+            // tokens are same - set confirmed on true and delete token
+            // send message about success - now user can login
+        } catch (Exception ex) {
+
+        }
+    }
+
     //TODO: confirmEmail
     //TODO: login
     //TODO: resetPassword
