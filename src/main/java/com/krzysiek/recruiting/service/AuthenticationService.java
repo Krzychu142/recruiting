@@ -92,8 +92,23 @@ public class AuthenticationService {
         }
     }
 
-    //TODO: login
     //TODO: resetPassword
+    public BaseResponseDTO sendResetPasswordToken(String email){
+        try {
+            BaseResponseDTO baseResponseDTO = new BaseResponseDTO();
+            // try to found user by email
+            // if not found throw error
+            // generate new JWTtoken and set as reset password token
+            //TODO: add property reset_password_token into User model
+            // set this token and send via email
+            // DONE
+            return  baseResponseDTO;
+        } catch (Exception ex) {
+            throw new RuntimeException("Error occurred while reset password process: \"" + ex.getMessage());
+        }
+    }
+
+    //TODO: login
     //TODO: logout
 
 }
