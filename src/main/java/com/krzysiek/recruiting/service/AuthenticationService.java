@@ -3,6 +3,7 @@ package com.krzysiek.recruiting.service;
 import com.krzysiek.recruiting.dto.RegisterRequestDTO;
 import com.krzysiek.recruiting.dto.RegisterResponseDTO;
 import com.krzysiek.recruiting.exception.UserAlreadyExistsException;
+import com.krzysiek.recruiting.exception.UserNotFoundException;
 import com.krzysiek.recruiting.model.User;
 import com.krzysiek.recruiting.repository.UserRepository;
 import io.jsonwebtoken.JwtException;
@@ -61,14 +62,23 @@ public class AuthenticationService {
 
     public void confirmEmail(String token){
         try {
-            // decode token - get email and expired
+            String email = jwtService.extractEmail(token);
+            Optional<User> optionalUser = userRepository.findByEmail(email);
+            if (optionalUser.isEmpty()) {
+                throw new UserNotFoundException("Bad token - owner of this token not found.");
+            }
             // try to find user with this email
             // compare tokens
             // if tokens are not the same - throw error
             // tokens are same - set confirmed on true and delete token
             // send message about success - now user can login
+        }
+        catch (JpaSystemException ex) {
+            throw new RuntimeException("JPA system error: " + ex.getMessage(), ex);
+        } catch (JwtException ex) {
+            throw new JwtException(ex.getMessage(), ex);
         } catch (Exception ex) {
-
+            throw new RuntimeException("Error occurred while confirming email: \"" + ex.getMessage());
         }
     }
 

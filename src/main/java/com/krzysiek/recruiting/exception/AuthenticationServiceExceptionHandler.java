@@ -15,4 +15,9 @@ public class AuthenticationServiceExceptionHandler extends BaseExceptionHandler 
         return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.CONFLICT));
     }
 
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUserNotFoundException(UserNotFoundException ex, HttpServletRequest servletRequest){
+        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.NOT_FOUND));
+    }
+
 }
