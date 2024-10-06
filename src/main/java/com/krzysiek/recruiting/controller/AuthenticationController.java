@@ -1,15 +1,14 @@
 package com.krzysiek.recruiting.controller;
 
 import com.krzysiek.recruiting.dto.RegisterRequestDTO;
+import com.krzysiek.recruiting.dto.RegisterResponseDTO;
 import com.krzysiek.recruiting.exception.UserAlreadyExistsException;
 import com.krzysiek.recruiting.service.AuthenticationService;
+import io.jsonwebtoken.JwtException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -28,8 +27,14 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO request) throws RuntimeException, UserAlreadyExistsException {
-        authenticationService.register(request);
-        return new ResponseEntity<>("register", HttpStatus.OK);
+    public ResponseEntity<RegisterResponseDTO> register(@Valid @RequestBody RegisterRequestDTO request) throws RuntimeException {
+        RegisterResponseDTO registerResponseDTO = authenticationService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(registerResponseDTO);
+    }
+
+    @GetMapping("/confirm-email")
+    // When frontend will be implemented it should be moved from params into body of request.
+    public void confirmEmail(@RequestParam("token") String token) {
+        System.out.println(token);
     }
 }
