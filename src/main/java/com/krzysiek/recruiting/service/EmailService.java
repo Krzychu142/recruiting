@@ -45,7 +45,7 @@ public class EmailService {
                 null,
                 null,
                 "Confirm your email.",
-                String.format("Click into this link to confirm your email: %s/authentication/confirm-email/token?=%s\nRemember link is valid only for %s hours.",clientApplicationAddress, confirmedLink, hoursToExpiration)
+                String.format("Click into this link to confirm your email: %s/authentication/confirm-email?token=%s\nRemember link is valid only for %s hours.",clientApplicationAddress, confirmedLink, hoursToExpiration)
         );
         sendEmail(emailDTO);
     }
