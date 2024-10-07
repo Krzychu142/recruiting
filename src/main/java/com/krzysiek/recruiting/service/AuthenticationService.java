@@ -88,9 +88,10 @@ public class AuthenticationService {
             if (optionalUser.isEmpty()) {
                 throw new UserNotFoundException("No user found with provided email.");
             }
-            String userEmail = optionalUser.get().getEmail();
+            User user = optionalUser.get();
+            String userEmail = user.getEmail();
             String resetPasswordToken = jwtService.encodeJWT(userEmail);
-            int rowsUpdated = userRepository.setUserResetPasswordToken(optionalUser.get().getId(), resetPasswordToken);
+            int rowsUpdated = userRepository.setUserResetPasswordToken(user.getId(), resetPasswordToken);
             if (rowsUpdated != 1) {
                 throw new RuntimeException("Something goes wrong while user updating.");
             }

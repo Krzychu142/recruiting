@@ -3,6 +3,7 @@ package com.krzysiek.recruiting.controller;
 import com.krzysiek.recruiting.dto.BaseResponseDTO;
 import com.krzysiek.recruiting.dto.RegisterRequestDTO;
 import com.krzysiek.recruiting.dto.RegisterResponseDTO;
+import com.krzysiek.recruiting.dto.SendResetPasswordTokenRequestDTO;
 import com.krzysiek.recruiting.exception.UserAlreadyExistsException;
 import com.krzysiek.recruiting.service.AuthenticationService;
 import io.jsonwebtoken.JwtException;
@@ -40,13 +41,13 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.OK).body(baseResponseDTO);
     }
 
-    //TODO: reset-password
     @PostMapping("/send-reset-password-link")
-    public ResponseEntity<BaseResponseDTO> sendResetPasswordToken(@RequestBody String email){
-        System.out.println(email);
-        BaseResponseDTO baseResponseDTO = authenticationService.sendResetPasswordToken(email);
+    public ResponseEntity<BaseResponseDTO> sendResetPasswordToken(@RequestBody SendResetPasswordTokenRequestDTO sendResetPasswordTokenRequestDTO){
+        System.out.println(sendResetPasswordTokenRequestDTO.email());
+        BaseResponseDTO baseResponseDTO = authenticationService.sendResetPasswordToken(sendResetPasswordTokenRequestDTO.email());
         return ResponseEntity.status(HttpStatus.OK).body(baseResponseDTO);
     }
+    //TODO: reset-password
     //TODO: logout
 
 }
