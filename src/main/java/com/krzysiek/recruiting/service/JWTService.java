@@ -1,5 +1,6 @@
 package com.krzysiek.recruiting.service;
 
+import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -17,6 +18,8 @@ import java.util.Date;
 @Service
 public class JWTService {
 
+    private final ThrowCorrectException throwCorrectException;
+
     @Getter
     @Value("${jwt.expiration.hours}")
     private  Long EXPIRATION_DATE_H;
@@ -28,6 +31,11 @@ public class JWTService {
     @Value("${jwt.algorithm}")
     private  String ALGORITHM;
 
+
+    public JWTService(ThrowCorrectException throwCorrectException){
+        this.throwCorrectException = throwCorrectException;
+    }
+
     public String encodeJWT(String email){
         try {
             byte[] decodedKey = Base64.getUrlDecoder().decode(JWT_SECRET_KEY);
@@ -38,26 +46,26 @@ public class JWTService {
                     .expiration(new Date(System.currentTimeMillis() + EXPIRATION_DATE_H * MILLISECONDS_IN_AN_HOUR))
                     .signWith(key)
                     .compact();
-        } catch (JwtException ex) {
-            throw new JwtException("Invalid JWT token on encoding.", ex);
+        } catch (Exception ex) {
+            throwCorrectException.handleException(ex);
+            return null;
         }
     }
 
-    public String extractEmail(String JWTToken){
+    public String extractEmail(String JWTToken) {
         try {
             byte[] decodedKey = Base64.getUrlDecoder().decode(JWT_SECRET_KEY);
             SecretKey secretKey = new SecretKeySpec(decodedKey, ALGORITHM);
             Claims claims = Jwts.parser()
-                                .verifyWith(secretKey)
-                                .build()
-                                .parseSignedClaims(JWTToken)
-                                .getPayload();
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(JWTToken)
+                    .getPayload();
             return claims.getSubject();
-        } catch (ExpiredJwtException ex){
-            throw new JwtException("Token has been expired.", ex);
-        }
-        catch (JwtException ex) {
-            throw new JwtException("Invalid JWT token on encoding.", ex);
+
+        } catch (Exception ex) {
+            throwCorrectException.handleException(ex);
+            return null;
         }
     }
 }

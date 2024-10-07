@@ -41,6 +41,12 @@ public class AuthenticationController {
     }
 
     //TODO: reset-password
+    @PostMapping("/send-reset-password-link")
+    public ResponseEntity<BaseResponseDTO> sendResetPasswordToken(@RequestBody String email){
+        System.out.println(email);
+        BaseResponseDTO baseResponseDTO = authenticationService.sendResetPasswordToken(email);
+        return ResponseEntity.status(HttpStatus.OK).body(baseResponseDTO);
+    }
     //TODO: logout
 
 }

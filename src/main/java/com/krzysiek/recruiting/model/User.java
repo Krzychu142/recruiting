@@ -31,6 +31,9 @@ public class User {
     @Column(name = "confirmation_token")
     private String confirmationToken;
 
+    @Column(name = "reset_password_token")
+    private String resetPasswordToken;
+
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER;
