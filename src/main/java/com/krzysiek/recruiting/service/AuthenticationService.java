@@ -3,14 +3,13 @@ package com.krzysiek.recruiting.service;
 import com.krzysiek.recruiting.dto.BaseResponseDTO;
 import com.krzysiek.recruiting.dto.RegisterRequestDTO;
 import com.krzysiek.recruiting.dto.RegisterResponseDTO;
+import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import com.krzysiek.recruiting.exception.UserAlreadyExistsException;
 import com.krzysiek.recruiting.exception.UserNotFoundException;
 import com.krzysiek.recruiting.model.User;
 import com.krzysiek.recruiting.repository.UserRepository;
-import io.jsonwebtoken.JwtException;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,13 +23,15 @@ public class AuthenticationService {
     private final JWTService jwtService;
     private final EmailService emailService;
     private final String clientApplicationAddress;
+    private final ThrowCorrectException throwCorrectException;
 
-    public AuthenticationService(PasswordEncoder passwordEncoder, UserRepository userRepository, JWTService jwtService, EmailService emailService, @Value("${client.application.address}") String clientApplicationAddress){
+    public AuthenticationService(PasswordEncoder passwordEncoder, UserRepository userRepository, JWTService jwtService, EmailService emailService, @Value("${client.application.address}") String clientApplicationAddress, ThrowCorrectException throwCorrectException){
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.emailService = emailService;
         this.clientApplicationAddress = clientApplicationAddress;
+        this.throwCorrectException = throwCorrectException;
     }
 
     public RegisterResponseDTO register(RegisterRequestDTO registerRequestDTO) throws RuntimeException, UserAlreadyExistsException {
@@ -53,12 +54,9 @@ public class AuthenticationService {
                     savedUser.getId(),
                     "An activation link was sent to the provided email. Confirm to login."
             );
-        } catch (JpaSystemException ex) {
-            throw new RuntimeException("JPA system error: " + ex.getMessage(), ex);
-        } catch (JwtException ex) {
-           throw new JwtException(ex.getMessage(), ex);
         } catch (Exception ex) {
-            throw new RuntimeException("Error occurred while registering the user: \"" + ex.getMessage());
+            throwCorrectException.handleException(ex);
+            return null;
         }
     }
 
@@ -73,27 +71,39 @@ public class AuthenticationService {
             if (!user.getConfirmationToken().equals(token)) {
                 throw new ValidationException("Tokens are not equal.");
             }
-            Long userId = user.getId();
-            int rowsUpdated = userRepository.updateUserFields(userId, true);
+            int rowsUpdated = userRepository.updateUserConfirmationFields(user.getId(), true);
             if (rowsUpdated != 1) {
                 throw new RuntimeException("Something goes wrong while user updating.");
             }
             return new BaseResponseDTO("The email has been successfully confirmed.");
-        } catch (ValidationException ex) {
-            throw new ValidationException(ex.getMessage(), ex);
-        } catch (UserNotFoundException ex) {
-            throw new UserNotFoundException(ex.getMessage());
-        } catch (JpaSystemException ex) {
-            throw new RuntimeException("JPA system error: " + ex.getMessage(), ex);
-        } catch (JwtException ex) {
-            throw new JwtException(ex.getMessage(), ex);
         } catch (Exception ex) {
-            throw new RuntimeException("Error occurred while confirming email: \"" + ex.getMessage());
+            throwCorrectException.handleException(ex);
+            return null;
+        }
+    }
+
+    public BaseResponseDTO sendResetPasswordToken(String email){
+        try {
+            Optional<User> optionalUser = userRepository.findByEmail(email);
+            if (optionalUser.isEmpty()) {
+                throw new UserNotFoundException("No user found with provided email.");
+            }
+            User user = optionalUser.get();
+            String userEmail = user.getEmail();
+            String resetPasswordToken = jwtService.encodeJWT(userEmail);
+            int rowsUpdated = userRepository.setUserResetPasswordToken(user.getId(), resetPasswordToken);
+            if (rowsUpdated != 1) {
+                throw new RuntimeException("Something goes wrong while user updating.");
+            }
+            emailService.sendResetPasswordLinkEmail(resetPasswordToken, clientApplicationAddress, userEmail, jwtService.getEXPIRATION_DATE_H());
+            return new BaseResponseDTO("Email with link and instruction send to provided email.");
+        } catch (Exception ex) {
+            throwCorrectException.handleException(ex);
+            return null;
         }
     }
 
     //TODO: login
-    //TODO: resetPassword
     //TODO: logout
 
 }

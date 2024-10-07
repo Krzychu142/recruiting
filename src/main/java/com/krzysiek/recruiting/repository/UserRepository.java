@@ -14,7 +14,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying
     @Transactional
     @Query("UPDATE User u SET u.isConfirmed = :isConfirmed, u.confirmationToken = null WHERE u.id = :id")
-    int updateUserFields(@Param("id") Long id, @Param("isConfirmed") Boolean isConfirmed);
+    int updateUserConfirmationFields(@Param("id") Long id, @Param("isConfirmed") Boolean isConfirmed);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE User u SET u.resetPasswordToken = :resetPasswordToken WHERE u.id = :id")
+    int setUserResetPasswordToken(@Param("id") Long id, @Param("resetPasswordToken") String resetPasswordToken);
 
     Optional<User> findByEmail(String email);
 

@@ -1,7 +1,6 @@
 package com.krzysiek.recruiting.service;
 
 import com.krzysiek.recruiting.dto.EmailDTO;
-import com.krzysiek.recruiting.dto.UserDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +12,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.mail.javamail.JavaMailSender;
 
+
+// TODO: maybe to refactor
 @Service
 public class EmailService {
 
@@ -39,13 +40,25 @@ public class EmailService {
     }
 
     @Async
-    public void sendConfirmedLinkEmail(String confirmedLink, String clientApplicationAddress, String to, Long hoursToExpiration){
+    public void sendResetPasswordLinkEmail(String confirmedLink, String clientApplicationAddress, String to, Long hoursToExpiration){
         EmailDTO emailDTO = new EmailDTO(
                 to,
                 null,
                 null,
                 "Confirm your email.",
                 String.format("Click into this link to confirm your email: %s/authentication/confirm-email?token=%s\nRemember link is valid only for %s hours.",clientApplicationAddress, confirmedLink, hoursToExpiration)
+        );
+        sendEmail(emailDTO);
+    }
+
+    @Async
+    public void sendConfirmedLinkEmail(String resetPasswordToken, String clientApplicationAddress, String to, Long hoursToExpiration){
+        EmailDTO emailDTO = new EmailDTO(
+                to,
+                null,
+                null,
+                "Reset your password.",
+                String.format("Click into this link to reset your password: %s/authentication/confirm-email?token=%s\nRemember link is valid only for %s hours.",clientApplicationAddress, resetPasswordToken, hoursToExpiration)
         );
         sendEmail(emailDTO);
     }
