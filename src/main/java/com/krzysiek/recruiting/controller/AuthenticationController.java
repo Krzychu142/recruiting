@@ -1,13 +1,9 @@
 package com.krzysiek.recruiting.controller;
 
-import com.krzysiek.recruiting.dto.BaseResponseDTO;
-import com.krzysiek.recruiting.dto.RegisterRequestDTO;
-import com.krzysiek.recruiting.dto.RegisterResponseDTO;
-import com.krzysiek.recruiting.dto.SendResetPasswordTokenRequestDTO;
-import com.krzysiek.recruiting.exception.UserAlreadyExistsException;
+import com.krzysiek.recruiting.dto.*;
 import com.krzysiek.recruiting.service.AuthenticationService;
-import io.jsonwebtoken.JwtException;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +25,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<RegisterResponseDTO> register(@Valid @RequestBody RegisterRequestDTO request) throws RuntimeException {
+    public ResponseEntity<RegisterResponseDTO> register(@Valid @RequestBody RegisterRequestDTO request){
         RegisterResponseDTO registerResponseDTO = authenticationService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(registerResponseDTO);
     }
@@ -43,11 +39,18 @@ public class AuthenticationController {
 
     @PostMapping("/send-reset-password-link")
     public ResponseEntity<BaseResponseDTO> sendResetPasswordToken(@RequestBody SendResetPasswordTokenRequestDTO sendResetPasswordTokenRequestDTO){
-        System.out.println(sendResetPasswordTokenRequestDTO.email());
         BaseResponseDTO baseResponseDTO = authenticationService.sendResetPasswordToken(sendResetPasswordTokenRequestDTO.email());
         return ResponseEntity.status(HttpStatus.OK).body(baseResponseDTO);
     }
-    //TODO: reset-password
-    //TODO: logout
 
+    @PostMapping("/reset-password")
+    // In final project token should be moved into body of request.
+    public ResponseEntity<BaseResponseDTO> resetPassword(@RequestParam("token") String token, @Valid @RequestBody ResetPasswordRequestDTO resetPasswordRequestDTO){
+        BaseResponseDTO baseResponseDTO = authenticationService.resetPassword(token, resetPasswordRequestDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(baseResponseDTO);
+    }
+
+    //TODO: logout
+    //TODO: login
+    //TODO: refresh-token
 }

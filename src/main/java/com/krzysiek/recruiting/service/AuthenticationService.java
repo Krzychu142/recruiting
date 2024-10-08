@@ -3,6 +3,7 @@ package com.krzysiek.recruiting.service;
 import com.krzysiek.recruiting.dto.BaseResponseDTO;
 import com.krzysiek.recruiting.dto.RegisterRequestDTO;
 import com.krzysiek.recruiting.dto.RegisterResponseDTO;
+import com.krzysiek.recruiting.dto.ResetPasswordRequestDTO;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import com.krzysiek.recruiting.exception.UserAlreadyExistsException;
 import com.krzysiek.recruiting.exception.UserNotFoundException;
@@ -34,13 +35,12 @@ public class AuthenticationService {
         this.throwCorrectException = throwCorrectException;
     }
 
-    public RegisterResponseDTO register(RegisterRequestDTO registerRequestDTO) throws RuntimeException, UserAlreadyExistsException {
-        Optional<User> optionalUser = userRepository.findByEmail(registerRequestDTO.email());
-        if (optionalUser.isPresent()) {
-            throw new UserAlreadyExistsException("User with this email already exists.");
-        }
-
+    public RegisterResponseDTO register(RegisterRequestDTO registerRequestDTO) {
         try {
+            Optional<User> optionalUser = userRepository.findByEmail(registerRequestDTO.email());
+            if (optionalUser.isPresent()) {
+                throw new UserAlreadyExistsException("User with this email already exists.");
+            }
             String userEmail = registerRequestDTO.email();
             String confirmedToken = jwtService.encodeJWT(userEmail);
             User user = new User(userEmail, passwordEncoder.encode(registerRequestDTO.password()), confirmedToken);
@@ -62,12 +62,7 @@ public class AuthenticationService {
 
     public BaseResponseDTO confirmEmail(String token){
         try {
-            String email = jwtService.extractEmail(token);
-            Optional<User> optionalUser = userRepository.findByEmail(email);
-            if (optionalUser.isEmpty()) {
-                throw new UserNotFoundException("Bad token - owner of this token not found.");
-            }
-            User user = optionalUser.get();
+            User user = foundUserByToken(token);
             if (!user.getConfirmationToken().equals(token)) {
                 throw new ValidationException("Tokens are not equal.");
             }
@@ -103,7 +98,41 @@ public class AuthenticationService {
         }
     }
 
+    public BaseResponseDTO resetPassword(String token, ResetPasswordRequestDTO resetPasswordRequestDTO){
+        try {
+            User user = foundUserByToken(token);
+            if (!user.getResetPasswordToken().equals(token)) {
+                throw new ValidationException("Tokens are not equal.");
+            }
+            if (passwordEncoder.matches(resetPasswordRequestDTO.password(), user.getPassword()))  {
+                throw new ValidationException("New password should be different than old one.");
+            }
+            int rowsUpdated = userRepository.updatePassword(user.getId(), passwordEncoder.encode(resetPasswordRequestDTO.password()));
+            if (rowsUpdated != 1){
+                throw new RuntimeException("Something goes wrong while user updating.");
+            }
+            return new BaseResponseDTO("Password successful changed.");
+        } catch (Exception ex) {
+            throwCorrectException.handleException(ex);
+            return null;
+        }
+    }
+
+    private User foundUserByToken(String token){
+        try {
+            if (token.isEmpty()){
+                throw new ValidationException("Tokens are empty.");
+            }
+            String email = jwtService.extractEmail(token);
+            return userRepository.findByEmail(email)
+                    .orElseThrow(() -> new UserNotFoundException("Bad token - owner of this token not found."));
+        } catch (Exception ex) {
+            throw new RuntimeException("Error in foundUserByToken." + ex.getMessage());
+        }
+    }
+
     //TODO: login
     //TODO: logout
+    //TODO: refresh-token
 
 }

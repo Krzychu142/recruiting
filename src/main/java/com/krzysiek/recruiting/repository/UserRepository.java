@@ -21,6 +21,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("UPDATE User u SET u.resetPasswordToken = :resetPasswordToken WHERE u.id = :id")
     int setUserResetPasswordToken(@Param("id") Long id, @Param("resetPasswordToken") String resetPasswordToken);
 
+    @Modifying
+    @Transactional
+    @Query("UPDATE User u SET u.password = :password, u.resetPasswordToken = null WHERE u.id = :id")
+    int updatePassword(@Param("id") Long id, @Param("password") String password);
+
     Optional<User> findByEmail(String email);
 
 }
