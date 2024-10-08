@@ -25,9 +25,9 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<RegisterResponseDTO> register(@Valid @RequestBody RegisterRequestDTO request){
-        RegisterResponseDTO registerResponseDTO = authenticationService.register(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(registerResponseDTO);
+    public ResponseEntity<BaseResponseDTO> register(@Valid @RequestBody RegisterRequestDTO request){
+        BaseResponseDTO baseResponseDTO = authenticationService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(baseResponseDTO);
     }
 
     @GetMapping("/confirm-email")

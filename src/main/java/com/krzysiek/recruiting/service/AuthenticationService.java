@@ -35,7 +35,7 @@ public class AuthenticationService {
         this.throwCorrectException = throwCorrectException;
     }
 
-    public RegisterResponseDTO register(RegisterRequestDTO registerRequestDTO) {
+    public BaseResponseDTO register(RegisterRequestDTO registerRequestDTO) {
         try {
             Optional<User> optionalUser = userRepository.findByEmail(registerRequestDTO.email());
             if (optionalUser.isPresent()) {
@@ -50,8 +50,7 @@ public class AuthenticationService {
             }
             emailService.sendConfirmedLinkEmail(confirmedToken, clientApplicationAddress, userEmail, jwtService.getEXPIRATION_DATE_H());
 
-            return new RegisterResponseDTO(
-                    savedUser.getId(),
+            return new BaseResponseDTO(
                     "An activation link was sent to the provided email. Confirm to login."
             );
         } catch (Exception ex) {
