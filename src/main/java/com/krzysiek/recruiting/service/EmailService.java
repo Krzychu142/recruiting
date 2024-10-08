@@ -45,8 +45,8 @@ public class EmailService {
                 to,
                 null,
                 null,
-                "Confirm your email.",
-                String.format("Click into this link to confirm your email: %s/authentication/confirm-email?token=%s\nRemember link is valid only for %s hours.",clientApplicationAddress, confirmedLink, hoursToExpiration)
+                "Reset your password.",
+                String.format("Click into this link to reset your password: %s/authentication/reset-password?token=%s\nRemember link is valid only for %s hours.",clientApplicationAddress, confirmedLink, hoursToExpiration)
         );
         sendEmail(emailDTO);
     }
@@ -57,8 +57,8 @@ public class EmailService {
                 to,
                 null,
                 null,
-                "Reset your password.",
-                String.format("Click into this link to reset your password: %s/authentication/confirm-email?token=%s\nRemember link is valid only for %s hours.",clientApplicationAddress, resetPasswordToken, hoursToExpiration)
+                "Confirm your email.",
+                String.format("Click into this link to confirm your email: %s/authentication/confirm-email?token=%s\nRemember link is valid only for %s hours.",clientApplicationAddress, resetPasswordToken, hoursToExpiration)
         );
         sendEmail(emailDTO);
     }
