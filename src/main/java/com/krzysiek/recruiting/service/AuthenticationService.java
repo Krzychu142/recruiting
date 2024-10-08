@@ -103,6 +103,13 @@ public class AuthenticationService {
             if (passwordEncoder.matches(resetPasswordRequestDTO.password(), user.getPassword()))  {
                 throw new ValidationException("New password should be different than old one.");
             }
+            if (!user.getIsConfirmed()){
+                // if he was able to reset password it's mean email is valid
+                int rowsUpdated = userRepository.updateUserConfirmationFields(user.getId(), true);
+                if (rowsUpdated != 1) {
+                    throw new RuntimeException("Something goes wrong while user updating.");
+                }
+            }
             int rowsUpdated = userRepository.updatePassword(user.getId(), passwordEncoder.encode(resetPasswordRequestDTO.password()));
             if (rowsUpdated != 1){
                 throw new RuntimeException("Something goes wrong while user updating.");
