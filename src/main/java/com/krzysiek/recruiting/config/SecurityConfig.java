@@ -18,7 +18,8 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/", "/recruitment", "/error").permitAll()
-                        .requestMatchers("/authentication/login", "/authentication/register", "/authentication/confirm-email", "/authentication/send-reset-password-link").anonymous()
+                        .requestMatchers("/authentication/login", "/authentication/register", "/authentication/confirm-email").anonymous()
+                        .requestMatchers("/authentication/send-reset-password-link", "/authentication/reset-password").permitAll()
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)

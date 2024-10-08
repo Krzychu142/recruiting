@@ -47,8 +47,7 @@ public class JWTService {
                     .signWith(key)
                     .compact();
         } catch (Exception ex) {
-            throwCorrectException.handleException(ex);
-            return null;
+            throw throwCorrectException.handleException(ex);
         }
     }
 
@@ -64,8 +63,7 @@ public class JWTService {
             return claims.getSubject();
 
         } catch (Exception ex) {
-            throwCorrectException.handleException(ex);
-            return null;
+            throw throwCorrectException.handleException(ex);
         }
     }
 }
