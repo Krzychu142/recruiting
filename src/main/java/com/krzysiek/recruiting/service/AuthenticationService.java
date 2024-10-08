@@ -55,8 +55,7 @@ public class AuthenticationService {
                     "An activation link was sent to the provided email. Confirm to login."
             );
         } catch (Exception ex) {
-            throwCorrectException.handleException(ex);
-            return null;
+            throw throwCorrectException.handleException(ex);
         }
     }
 
@@ -72,8 +71,7 @@ public class AuthenticationService {
             }
             return new BaseResponseDTO("The email has been successfully confirmed.");
         } catch (Exception ex) {
-            throwCorrectException.handleException(ex);
-            return null;
+            throw throwCorrectException.handleException(ex);
         }
     }
 
@@ -93,8 +91,7 @@ public class AuthenticationService {
             emailService.sendResetPasswordLinkEmail(resetPasswordToken, clientApplicationAddress, userEmail, jwtService.getEXPIRATION_DATE_H());
             return new BaseResponseDTO("Email with link and instruction send to provided email.");
         } catch (Exception ex) {
-            throwCorrectException.handleException(ex);
-            return null;
+            throw throwCorrectException.handleException(ex);
         }
     }
 
@@ -113,8 +110,7 @@ public class AuthenticationService {
             }
             return new BaseResponseDTO("Password successful changed.");
         } catch (Exception ex) {
-            throwCorrectException.handleException(ex);
-            return null;
+            throw throwCorrectException.handleException(ex);
         }
     }
 
@@ -127,7 +123,7 @@ public class AuthenticationService {
             return userRepository.findByEmail(email)
                     .orElseThrow(() -> new UserNotFoundException("Bad token - owner of this token not found."));
         } catch (Exception ex) {
-            throw new RuntimeException("Error in foundUserByToken." + ex.getMessage());
+            throw throwCorrectException.handleException(ex);
         }
     }
 
