@@ -27,8 +27,13 @@ public class JWTService {
     @Value("${jwt.expiration.minutes}")
     private Long EXPIRATION_DATE_MINUTES;
 
+    @Getter
+    @Value("${jwt.expiration.days}")
+    private Long EXPIRATION_DATE_DAYS;
+
     private static final long MILLISECONDS_IN_A_MINUTE = 1000 * 60;
     private static final long MILLISECONDS_IN_AN_HOUR = MILLISECONDS_IN_A_MINUTE * 60;
+    private static final long MILLISECONDS_IN_A_DAY = MILLISECONDS_IN_AN_HOUR * 24;
 
     @Value("${jwt.secret.key}")
     private  String JWT_SECRET_KEY;
@@ -45,8 +50,12 @@ public class JWTService {
         return encodeToken(email, null, EXPIRATION_DATE_H, MILLISECONDS_IN_AN_HOUR);
     }
 
-    public String getAuthToken(String email, Role role){
+    public String getAccessToken(String email, Role role){
         return encodeToken(email, role, EXPIRATION_DATE_MINUTES, MILLISECONDS_IN_A_MINUTE);
+    }
+
+    public String getRefreshToken(String email){
+        return encodeToken(email, null, EXPIRATION_DATE_DAYS, MILLISECONDS_IN_A_DAY);
     }
 
     private String encodeToken(String email, Role role, Long expirationDateTime, Long millisecondsMultiplier) {

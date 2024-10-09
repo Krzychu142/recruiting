@@ -57,12 +57,18 @@ public class AuthenticationService {
 
     public BaseResponseDTO confirmEmail(String token){
         try {
-            User user = foundUserByToken(token);
+            User user = foundUserByLongTermToken(token);
+            if (user.getIsConfirmed()){
+                throw new ValidationException("Email already confirmed.");
+            }
+            if (user.getConfirmationToken().isBlank()){
+                throw new ValidationException("No token set for confirmation token.");
+            }
             if (!user.getConfirmationToken().equals(token)) {
                 throw new ValidationException("Tokens are not equal.");
             }
-            int rowsUpdated = userRepository.updateUserConfirmationFields(user.getId(), true);
-            if (rowsUpdated != 1) {
+            int updatedRows = userRepository.updateUserConfirmationFields(user.getId(), true);
+            if (updatedRows != 1) {
                 throw new RuntimeException("Something goes wrong while user updating.");
             }
             return new BaseResponseDTO("The email has been successfully confirmed.");
@@ -76,8 +82,8 @@ public class AuthenticationService {
             User user = getUserByEmail(email);
             String userEmail = user.getEmail();
             String resetPasswordToken = jwtService.getLongTermToken(userEmail);
-            int rowsUpdated = userRepository.setUserResetPasswordToken(user.getId(), resetPasswordToken);
-            if (rowsUpdated != 1) {
+            int updatedRows = userRepository.setUserResetPasswordToken(user.getId(), resetPasswordToken);
+            if (updatedRows != 1) {
                 throw new RuntimeException("Something goes wrong while user updating.");
             }
             emailService.sendResetPasswordLinkEmail(resetPasswordToken, clientApplicationAddress, userEmail, jwtService.getEXPIRATION_DATE_H());
@@ -89,7 +95,7 @@ public class AuthenticationService {
 
     public BaseResponseDTO resetPassword(String token, ResetPasswordRequestDTO resetPasswordRequestDTO){
         try {
-            User user = foundUserByToken(token);
+            User user = foundUserByLongTermToken(token);
             if (!user.getResetPasswordToken().equals(token)) {
                 throw new ValidationException("Tokens are not equal.");
             }
@@ -98,13 +104,13 @@ public class AuthenticationService {
             }
             if (!user.getIsConfirmed()){
                 // if he was able to reset password it's mean email is valid
-                int rowsUpdated = userRepository.updateUserConfirmationFields(user.getId(), true);
-                if (rowsUpdated != 1) {
+                int updatedRows = userRepository.updateUserConfirmationFields(user.getId(), true);
+                if (updatedRows != 1) {
                     throw new RuntimeException("Something goes wrong while user updating.");
                 }
             }
-            int rowsUpdated = userRepository.updatePassword(user.getId(), passwordEncoder.encode(resetPasswordRequestDTO.password()));
-            if (rowsUpdated != 1){
+            int updatedRows = userRepository.updatePassword(user.getId(), passwordEncoder.encode(resetPasswordRequestDTO.password()));
+            if (updatedRows != 1){
                 throw new RuntimeException("Something goes wrong while user updating.");
             }
             return new BaseResponseDTO("Password successful changed.");
@@ -113,7 +119,6 @@ public class AuthenticationService {
         }
     }
 
-    //TODO: login
     public LoginResponseDTO login(LoginRequestDTO loginRequestDTO){
         try {
             User user = getUserByEmail(loginRequestDTO.email());
@@ -123,16 +128,21 @@ public class AuthenticationService {
             if (!passwordEncoder.matches(loginRequestDTO.password(), user.getPassword())) {
                 throw new ValidationException("Uncorrected password.");
             }
-            String token = jwtService.getAuthToken(user.getEmail(), user.getRole());
-            return new LoginResponseDTO(token, "Successfully logged in.");
+            String accessToken = jwtService.getAccessToken(user.getEmail(), user.getRole());
+            String refreshToken = jwtService.getRefreshToken(user.getEmail());
+            int updatedRows = userRepository.updateRefreshToken(user.getId(), refreshToken);
+            if (updatedRows != 1) {
+                throw new RuntimeException("Something goes wrong while user updating.");
+            }
+            return new LoginResponseDTO(accessToken, refreshToken,"Successfully logged in.");
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
         }
     }
 
-    private User foundUserByToken(String token){
+    private User foundUserByLongTermToken(String token){
         try {
-            if (token.isEmpty()){
+            if (token.isBlank()){
                 throw new ValidationException("Tokens are empty.");
             }
             String email = jwtService.extractEmail(token);
