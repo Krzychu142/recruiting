@@ -19,18 +19,13 @@ public class AuthenticationController {
         this.authenticationService = authenticationService;
     }
 
-    @PostMapping("/login")
-    public String login(){
-        return "login";
-    }
-
     @PostMapping("/register")
     public ResponseEntity<BaseResponseDTO> register(@Valid @RequestBody RegisterRequestDTO request){
         BaseResponseDTO baseResponseDTO = authenticationService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(baseResponseDTO);
     }
 
-    @GetMapping("/confirm-email")
+    @PostMapping("/confirm-email")
     // When frontend will be implemented it should be moved from params into body of request.
     public ResponseEntity<BaseResponseDTO> confirmEmail(@RequestParam("token") String token) {
         BaseResponseDTO baseResponseDTO = authenticationService.confirmEmail(token);
@@ -50,7 +45,12 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.OK).body(baseResponseDTO);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO){
+        LoginResponseDTO loginResponseDTO = authenticationService.login(loginRequestDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(loginResponseDTO);
+    }
+
     //TODO: logout
-    //TODO: login
     //TODO: refresh-token
 }

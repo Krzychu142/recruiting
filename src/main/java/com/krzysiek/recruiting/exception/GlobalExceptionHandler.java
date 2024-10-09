@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -47,6 +48,11 @@ public class GlobalExceptionHandler extends BaseExceptionHandler{
     @ExceptionHandler(JwtException.class)
     public ResponseEntity<ErrorResponseDTO> handleJwtException(JwtException ex, HttpServletRequest servletRequest){
         return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.UNAUTHORIZED));
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponseDTO> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex, HttpServletRequest servletRequest){
+        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.METHOD_NOT_ALLOWED));
     }
 
     @ExceptionHandler(Exception.class)

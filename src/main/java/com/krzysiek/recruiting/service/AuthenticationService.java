@@ -1,9 +1,6 @@
 package com.krzysiek.recruiting.service;
 
-import com.krzysiek.recruiting.dto.BaseResponseDTO;
-import com.krzysiek.recruiting.dto.RegisterRequestDTO;
-import com.krzysiek.recruiting.dto.RegisterResponseDTO;
-import com.krzysiek.recruiting.dto.ResetPasswordRequestDTO;
+import com.krzysiek.recruiting.dto.*;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import com.krzysiek.recruiting.exception.UserAlreadyExistsException;
 import com.krzysiek.recruiting.exception.UserNotFoundException;
@@ -42,7 +39,7 @@ public class AuthenticationService {
                 throw new UserAlreadyExistsException("User with this email already exists.");
             }
             String userEmail = registerRequestDTO.email();
-            String confirmedToken = jwtService.encodeJWT(userEmail);
+            String confirmedToken = jwtService.getLongTermToken(userEmail);
             User user = new User(userEmail, passwordEncoder.encode(registerRequestDTO.password()), confirmedToken);
             User savedUser = userRepository.save(user);
             if (savedUser.getId() == null) {
@@ -60,12 +57,18 @@ public class AuthenticationService {
 
     public BaseResponseDTO confirmEmail(String token){
         try {
-            User user = foundUserByToken(token);
+            User user = foundUserByLongTermToken(token);
+            if (user.getIsConfirmed()){
+                throw new ValidationException("Email already confirmed.");
+            }
+            if (user.getConfirmationToken().isBlank()){
+                throw new ValidationException("No token set for confirmation token.");
+            }
             if (!user.getConfirmationToken().equals(token)) {
                 throw new ValidationException("Tokens are not equal.");
             }
-            int rowsUpdated = userRepository.updateUserConfirmationFields(user.getId(), true);
-            if (rowsUpdated != 1) {
+            int updatedRows = userRepository.updateUserConfirmationFields(user.getId(), true);
+            if (updatedRows != 1) {
                 throw new RuntimeException("Something goes wrong while user updating.");
             }
             return new BaseResponseDTO("The email has been successfully confirmed.");
@@ -76,15 +79,11 @@ public class AuthenticationService {
 
     public BaseResponseDTO sendResetPasswordToken(String email){
         try {
-            Optional<User> optionalUser = userRepository.findByEmail(email);
-            if (optionalUser.isEmpty()) {
-                throw new UserNotFoundException("No user found with provided email.");
-            }
-            User user = optionalUser.get();
+            User user = getUserByEmail(email);
             String userEmail = user.getEmail();
-            String resetPasswordToken = jwtService.encodeJWT(userEmail);
-            int rowsUpdated = userRepository.setUserResetPasswordToken(user.getId(), resetPasswordToken);
-            if (rowsUpdated != 1) {
+            String resetPasswordToken = jwtService.getLongTermToken(userEmail);
+            int updatedRows = userRepository.setUserResetPasswordToken(user.getId(), resetPasswordToken);
+            if (updatedRows != 1) {
                 throw new RuntimeException("Something goes wrong while user updating.");
             }
             emailService.sendResetPasswordLinkEmail(resetPasswordToken, clientApplicationAddress, userEmail, jwtService.getEXPIRATION_DATE_H());
@@ -96,7 +95,7 @@ public class AuthenticationService {
 
     public BaseResponseDTO resetPassword(String token, ResetPasswordRequestDTO resetPasswordRequestDTO){
         try {
-            User user = foundUserByToken(token);
+            User user = foundUserByLongTermToken(token);
             if (!user.getResetPasswordToken().equals(token)) {
                 throw new ValidationException("Tokens are not equal.");
             }
@@ -105,13 +104,13 @@ public class AuthenticationService {
             }
             if (!user.getIsConfirmed()){
                 // if he was able to reset password it's mean email is valid
-                int rowsUpdated = userRepository.updateUserConfirmationFields(user.getId(), true);
-                if (rowsUpdated != 1) {
+                int updatedRows = userRepository.updateUserConfirmationFields(user.getId(), true);
+                if (updatedRows != 1) {
                     throw new RuntimeException("Something goes wrong while user updating.");
                 }
             }
-            int rowsUpdated = userRepository.updatePassword(user.getId(), passwordEncoder.encode(resetPasswordRequestDTO.password()));
-            if (rowsUpdated != 1){
+            int updatedRows = userRepository.updatePassword(user.getId(), passwordEncoder.encode(resetPasswordRequestDTO.password()));
+            if (updatedRows != 1){
                 throw new RuntimeException("Something goes wrong while user updating.");
             }
             return new BaseResponseDTO("Password successful changed.");
@@ -120,9 +119,30 @@ public class AuthenticationService {
         }
     }
 
-    private User foundUserByToken(String token){
+    public LoginResponseDTO login(LoginRequestDTO loginRequestDTO){
         try {
-            if (token.isEmpty()){
+            User user = getUserByEmail(loginRequestDTO.email());
+            if(!user.getIsConfirmed()){
+                throw new ValidationException("Email is not confirmed.");
+            }
+            if (!passwordEncoder.matches(loginRequestDTO.password(), user.getPassword())) {
+                throw new ValidationException("Uncorrected password.");
+            }
+            String accessToken = jwtService.getAccessToken(user.getEmail(), user.getRole());
+            String refreshToken = jwtService.getRefreshToken(user.getEmail());
+            int updatedRows = userRepository.updateRefreshToken(user.getId(), refreshToken);
+            if (updatedRows != 1) {
+                throw new RuntimeException("Something goes wrong while user updating.");
+            }
+            return new LoginResponseDTO(accessToken, refreshToken,"Successfully logged in.");
+        } catch (Exception ex) {
+            throw throwCorrectException.handleException(ex);
+        }
+    }
+
+    private User foundUserByLongTermToken(String token){
+        try {
+            if (token.isBlank()){
                 throw new ValidationException("Tokens are empty.");
             }
             String email = jwtService.extractEmail(token);
@@ -133,7 +153,15 @@ public class AuthenticationService {
         }
     }
 
-    //TODO: login
+    private User getUserByEmail(String email){
+        try {
+            return userRepository.findByEmail(email)
+                    .orElseThrow(() -> new UserNotFoundException("User with provided email not found."));
+        } catch (Exception ex) {
+            throw throwCorrectException.handleException(ex);
+        }
+    }
+
     //TODO: logout
     //TODO: refresh-token
 
