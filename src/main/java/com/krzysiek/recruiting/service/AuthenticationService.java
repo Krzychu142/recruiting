@@ -116,9 +116,10 @@ public class AuthenticationService {
     //TODO: login
     public BaseResponseDTO login(LoginRequestDTO loginRequestDTO){
         try {
-//            System.out.println(loginRequestDTO.email());
-//            System.out.println(loginRequestDTO.password());
             User user = getUserByEmail(loginRequestDTO.email());
+            if (!passwordEncoder.matches(loginRequestDTO.password(), user.getPassword())) {
+                throw new ValidationException("Uncorrected password.");
+            }
             return new BaseResponseDTO("Successfully logged in.");
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
