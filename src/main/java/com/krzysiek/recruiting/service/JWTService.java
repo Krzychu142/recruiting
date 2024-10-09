@@ -1,9 +1,8 @@
 package com.krzysiek.recruiting.service;
 
+import com.krzysiek.recruiting.enums.Role;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,8 +21,14 @@ public class JWTService {
 
     @Getter
     @Value("${jwt.expiration.hours}")
-    private  Long EXPIRATION_DATE_H;
-    private static final long MILLISECONDS_IN_AN_HOUR = 1000 * 60 * 60;
+    private Long EXPIRATION_DATE_H;
+
+    @Getter
+    @Value("${jwt.expiration.minutes}")
+    private Long EXPIRATION_DATE_MINUTES;
+
+    private static final long MILLISECONDS_IN_A_MINUTE = 1000 * 60;
+    private static final long MILLISECONDS_IN_AN_HOUR = MILLISECONDS_IN_A_MINUTE * 60;
 
     @Value("${jwt.secret.key}")
     private  String JWT_SECRET_KEY;
@@ -36,16 +41,30 @@ public class JWTService {
         this.throwCorrectException = throwCorrectException;
     }
 
-    public String encodeJWT(String email){
+    public String getLongTermToken(String email){
+        return encodeToken(email, null, EXPIRATION_DATE_H, MILLISECONDS_IN_AN_HOUR);
+    }
+
+    public String getAuthToken(String email, Role role){
+        return encodeToken(email, role, EXPIRATION_DATE_MINUTES, MILLISECONDS_IN_A_MINUTE);
+    }
+
+    private String encodeToken(String email, Role role, Long expirationDateTime, Long millisecondsMultiplier) {
         try {
             byte[] decodedKey = Base64.getUrlDecoder().decode(JWT_SECRET_KEY);
             Key key = new SecretKeySpec(decodedKey, ALGORITHM);
 
-            return Jwts.builder()
+            var builder = Jwts.builder()
                     .subject(email)
-                    .expiration(new Date(System.currentTimeMillis() + EXPIRATION_DATE_H * MILLISECONDS_IN_AN_HOUR))
-                    .signWith(key)
-                    .compact();
+                    .expiration(new Date(System.currentTimeMillis() + expirationDateTime * millisecondsMultiplier))
+                    .signWith(key);
+
+
+            if (role != null) {
+                builder.claim("role", role.name());
+            }
+
+            return builder.compact();
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
         }

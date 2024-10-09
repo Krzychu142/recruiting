@@ -39,7 +39,7 @@ public class AuthenticationService {
                 throw new UserAlreadyExistsException("User with this email already exists.");
             }
             String userEmail = registerRequestDTO.email();
-            String confirmedToken = jwtService.encodeJWT(userEmail);
+            String confirmedToken = jwtService.getLongTermToken(userEmail);
             User user = new User(userEmail, passwordEncoder.encode(registerRequestDTO.password()), confirmedToken);
             User savedUser = userRepository.save(user);
             if (savedUser.getId() == null) {
@@ -75,7 +75,7 @@ public class AuthenticationService {
         try {
             User user = getUserByEmail(email);
             String userEmail = user.getEmail();
-            String resetPasswordToken = jwtService.encodeJWT(userEmail);
+            String resetPasswordToken = jwtService.getLongTermToken(userEmail);
             int rowsUpdated = userRepository.setUserResetPasswordToken(user.getId(), resetPasswordToken);
             if (rowsUpdated != 1) {
                 throw new RuntimeException("Something goes wrong while user updating.");
@@ -120,6 +120,7 @@ public class AuthenticationService {
             if (!passwordEncoder.matches(loginRequestDTO.password(), user.getPassword())) {
                 throw new ValidationException("Uncorrected password.");
             }
+            // generate jwt token with email and role
             return new BaseResponseDTO("Successfully logged in.");
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
