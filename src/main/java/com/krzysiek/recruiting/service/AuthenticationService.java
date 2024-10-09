@@ -1,9 +1,6 @@
 package com.krzysiek.recruiting.service;
 
-import com.krzysiek.recruiting.dto.BaseResponseDTO;
-import com.krzysiek.recruiting.dto.RegisterRequestDTO;
-import com.krzysiek.recruiting.dto.RegisterResponseDTO;
-import com.krzysiek.recruiting.dto.ResetPasswordRequestDTO;
+import com.krzysiek.recruiting.dto.*;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import com.krzysiek.recruiting.exception.UserAlreadyExistsException;
 import com.krzysiek.recruiting.exception.UserNotFoundException;
@@ -76,11 +73,7 @@ public class AuthenticationService {
 
     public BaseResponseDTO sendResetPasswordToken(String email){
         try {
-            Optional<User> optionalUser = userRepository.findByEmail(email);
-            if (optionalUser.isEmpty()) {
-                throw new UserNotFoundException("No user found with provided email.");
-            }
-            User user = optionalUser.get();
+            User user = getUserByEmail(email);
             String userEmail = user.getEmail();
             String resetPasswordToken = jwtService.encodeJWT(userEmail);
             int rowsUpdated = userRepository.setUserResetPasswordToken(user.getId(), resetPasswordToken);
@@ -120,6 +113,18 @@ public class AuthenticationService {
         }
     }
 
+    //TODO: login
+    public BaseResponseDTO login(LoginRequestDTO loginRequestDTO){
+        try {
+//            System.out.println(loginRequestDTO.email());
+//            System.out.println(loginRequestDTO.password());
+            User user = getUserByEmail(loginRequestDTO.email());
+            return new BaseResponseDTO("Successfully logged in.");
+        } catch (Exception ex) {
+            throw throwCorrectException.handleException(ex);
+        }
+    }
+
     private User foundUserByToken(String token){
         try {
             if (token.isEmpty()){
@@ -133,7 +138,15 @@ public class AuthenticationService {
         }
     }
 
-    //TODO: login
+    private User getUserByEmail(String email){
+        try {
+            return userRepository.findByEmail(email)
+                    .orElseThrow(() -> new UserNotFoundException("User with provided email not found."));
+        } catch (Exception ex) {
+            throw throwCorrectException.handleException(ex);
+        }
+    }
+
     //TODO: logout
     //TODO: refresh-token
 
