@@ -45,11 +45,10 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.OK).body(baseResponseDTO);
     }
 
-    //TODO: login
     @PostMapping("/login")
-    public ResponseEntity<BaseResponseDTO> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO){
-        BaseResponseDTO baseResponseDTO = authenticationService.login(loginRequestDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(baseResponseDTO);
+    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO){
+        LoginResponseDTO loginResponseDTO = authenticationService.login(loginRequestDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(loginResponseDTO);
     }
 
     //TODO: logout

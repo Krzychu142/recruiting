@@ -114,14 +114,17 @@ public class AuthenticationService {
     }
 
     //TODO: login
-    public BaseResponseDTO login(LoginRequestDTO loginRequestDTO){
+    public LoginResponseDTO login(LoginRequestDTO loginRequestDTO){
         try {
             User user = getUserByEmail(loginRequestDTO.email());
+            if(!user.getIsConfirmed()){
+                throw new ValidationException("Email is not confirmed.");
+            }
             if (!passwordEncoder.matches(loginRequestDTO.password(), user.getPassword())) {
                 throw new ValidationException("Uncorrected password.");
             }
-            // generate jwt token with email and role
-            return new BaseResponseDTO("Successfully logged in.");
+            String token = jwtService.getAuthToken(user.getEmail(), user.getRole());
+            return new LoginResponseDTO(token, "Successfully logged in.");
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
         }

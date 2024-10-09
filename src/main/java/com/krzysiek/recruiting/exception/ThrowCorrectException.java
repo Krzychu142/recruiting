@@ -17,6 +17,8 @@ public class ThrowCorrectException {
             return new RuntimeException("JPA system error: " + ex.getMessage(), ex);
         } else if (ex instanceof JwtException) {
             return new JwtException(ex.getMessage(), ex);
+        } else if (ex instanceof IllegalArgumentException) {
+            return new IllegalArgumentException(ex.getMessage(), ex);
         }
         return new RuntimeException("Error occurred: " + ex.getMessage());
     }
