@@ -3,7 +3,6 @@ package com.krzysiek.recruiting.controller;
 import com.krzysiek.recruiting.dto.*;
 import com.krzysiek.recruiting.service.AuthenticationService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +32,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/send-reset-password-link")
-    public ResponseEntity<BaseResponseDTO> sendResetPasswordToken(@RequestBody SendResetPasswordTokenRequestDTO sendResetPasswordTokenRequestDTO){
+    public ResponseEntity<BaseResponseDTO> sendResetPasswordToken(@Valid @RequestBody SendResetPasswordTokenRequestDTO sendResetPasswordTokenRequestDTO){
         BaseResponseDTO baseResponseDTO = authenticationService.sendResetPasswordToken(sendResetPasswordTokenRequestDTO.email());
         return ResponseEntity.status(HttpStatus.OK).body(baseResponseDTO);
     }
@@ -51,6 +50,21 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.OK).body(loginResponseDTO);
     }
 
-    //TODO: logout
-    //TODO: refresh-token
+    @PostMapping("/refresh-token")
+    public ResponseEntity<LoginResponseDTO> refreshToken(@Valid @RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO){
+        LoginResponseDTO loginRequestDTO = authenticationService.refreshToken(refreshTokenRequestDTO.refreshToken());
+        return ResponseEntity.status(HttpStatus.OK).body(loginRequestDTO);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@Valid @RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO) {
+        authenticationService.logout(refreshTokenRequestDTO.refreshToken());
+        return ResponseEntity.ok("Successfully logged out.");
+    }
+
+    @PostMapping("/logout-all-devices")
+    public ResponseEntity<String> logoutAllDevices(@RequestHeader("Authorization") String accessToken) {
+        authenticationService.logoutAllDevices(accessToken);
+        return ResponseEntity.ok("Successfully logged out from all devices.");
+    }
 }

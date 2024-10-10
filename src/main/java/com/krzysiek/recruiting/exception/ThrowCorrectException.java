@@ -1,24 +1,34 @@
 package com.krzysiek.recruiting.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.validation.ValidationException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Component;
+
+import java.security.SignatureException;
 
 @Component
 public class ThrowCorrectException {
 
     public RuntimeException handleException(Exception ex) {
         if (ex instanceof ValidationException) {
-            return new ValidationException(ex.getMessage(), ex);
+            throw new ValidationException(ex.getMessage(), ex);
         } else if (ex instanceof UserNotFoundException) {
-            return new UserNotFoundException(ex.getMessage());
+            throw new UserNotFoundException(ex.getMessage());
         } else if (ex instanceof JpaSystemException) {
-            return new RuntimeException("JPA system error: " + ex.getMessage(), ex);
+            throw new RuntimeException("JPA system error: " + ex.getMessage(), ex);
+        } else if (ex instanceof SignatureException){
+            throw new JwtException("SignatureException: " + ex.getMessage(), ex);
+        } else if (ex instanceof ExpiredJwtException){
+            throw new JwtException("JWT expired: " + ex.getMessage(), ex);
         } else if (ex instanceof JwtException) {
-            return new JwtException(ex.getMessage(), ex);
+            throw new JwtException(ex.getMessage(), ex);
         } else if (ex instanceof IllegalArgumentException) {
-            return new IllegalArgumentException(ex.getMessage(), ex);
+            throw new IllegalArgumentException(ex.getMessage(), ex);
+        } else if (ex instanceof HttpMessageNotReadableException) {
+            throw new ValidationException(ex.getMessage(), ex);
         }
         return new RuntimeException("Error occurred: " + ex.getMessage());
     }

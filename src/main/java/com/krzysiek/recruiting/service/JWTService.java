@@ -1,6 +1,7 @@
 package com.krzysiek.recruiting.service;
 
 import com.krzysiek.recruiting.enums.Role;
+import com.krzysiek.recruiting.enums.TokensType;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -47,18 +48,32 @@ public class JWTService {
     }
 
     public String getLongTermToken(String email){
-        return encodeToken(email, null, EXPIRATION_DATE_H, MILLISECONDS_IN_AN_HOUR);
+        return encodeToken(email, TokensType.LONG_TERM, null, EXPIRATION_DATE_H, MILLISECONDS_IN_AN_HOUR);
     }
 
     public String getAccessToken(String email, Role role){
-        return encodeToken(email, role, EXPIRATION_DATE_MINUTES, MILLISECONDS_IN_A_MINUTE);
+        return encodeToken(email, TokensType.ACCESS, role, EXPIRATION_DATE_MINUTES, MILLISECONDS_IN_A_MINUTE);
     }
 
     public String getRefreshToken(String email){
-        return encodeToken(email, null, EXPIRATION_DATE_DAYS, MILLISECONDS_IN_A_DAY);
+        return encodeToken(email, TokensType.REFRESH, null, EXPIRATION_DATE_DAYS, MILLISECONDS_IN_A_DAY);
     }
 
-    private String encodeToken(String email, Role role, Long expirationDateTime, Long millisecondsMultiplier) {
+    public TokensType extractType(String JWTToken){
+        String typeString = extractClaims(JWTToken).get("type", String.class);
+        return typeString != null ? TokensType.valueOf(typeString) : null;
+    }
+
+    public String extractEmail(String JWTToken) {
+        return extractClaims(JWTToken).getSubject();
+    }
+
+    public Role extractRole(String JWTToken) {
+        String roleString = extractClaims(JWTToken).get("role", String.class);
+        return roleString != null ? Role.valueOf(roleString) : null;
+    }
+
+    private String encodeToken(String email, TokensType tokensType, Role role, Long expirationDateTime, Long millisecondsMultiplier) {
         try {
             byte[] decodedKey = Base64.getUrlDecoder().decode(JWT_SECRET_KEY);
             Key key = new SecretKeySpec(decodedKey, ALGORITHM);
@@ -66,7 +81,8 @@ public class JWTService {
             var builder = Jwts.builder()
                     .subject(email)
                     .expiration(new Date(System.currentTimeMillis() + expirationDateTime * millisecondsMultiplier))
-                    .signWith(key);
+                    .signWith(key)
+                    .claim("type", tokensType.toString());
 
 
             if (role != null) {
@@ -79,16 +95,15 @@ public class JWTService {
         }
     }
 
-    public String extractEmail(String JWTToken) {
+    private Claims extractClaims(String JWTToken) {
         try {
             byte[] decodedKey = Base64.getUrlDecoder().decode(JWT_SECRET_KEY);
             SecretKey secretKey = new SecretKeySpec(decodedKey, ALGORITHM);
-            Claims claims = Jwts.parser()
+            return Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(JWTToken)
                     .getPayload();
-            return claims.getSubject();
 
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);

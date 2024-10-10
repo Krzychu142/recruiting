@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,11 +18,11 @@ import java.util.List;
 
 
 @RestControllerAdvice
-public class GlobalExceptionHandler extends BaseExceptionHandler{
+public class GlobalControllerExceptionHandler extends BaseExceptionHandler{
 
     private final EmailService emailService;
 
-    public GlobalExceptionHandler(EmailService emailService) {
+    public GlobalControllerExceptionHandler(EmailService emailService) {
         this.emailService = emailService;
     }
 
@@ -52,6 +53,11 @@ public class GlobalExceptionHandler extends BaseExceptionHandler{
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ErrorResponseDTO> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex, HttpServletRequest servletRequest){
+        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.METHOD_NOT_ALLOWED));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponseDTO> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, HttpServletRequest servletRequest){
         return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.METHOD_NOT_ALLOWED));
     }
 

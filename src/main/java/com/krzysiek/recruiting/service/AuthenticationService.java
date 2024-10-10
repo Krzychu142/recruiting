@@ -1,18 +1,24 @@
 package com.krzysiek.recruiting.service;
 
 import com.krzysiek.recruiting.dto.*;
+import com.krzysiek.recruiting.enums.TokensType;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import com.krzysiek.recruiting.exception.UserAlreadyExistsException;
 import com.krzysiek.recruiting.exception.UserNotFoundException;
+import com.krzysiek.recruiting.model.RefreshToken;
 import com.krzysiek.recruiting.model.User;
+import com.krzysiek.recruiting.repository.RefreshTokenRepository;
 import com.krzysiek.recruiting.repository.UserRepository;
+import io.jsonwebtoken.JwtException;
+import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
-
+//TODO: encrypt all stored tokens
 @Service
 public class AuthenticationService {
 
@@ -22,16 +28,20 @@ public class AuthenticationService {
     private final EmailService emailService;
     private final String clientApplicationAddress;
     private final ThrowCorrectException throwCorrectException;
+    private final RefreshTokenRepository refreshTokenRepository;
 
-    public AuthenticationService(PasswordEncoder passwordEncoder, UserRepository userRepository, JWTService jwtService, EmailService emailService, @Value("${client.application.address}") String clientApplicationAddress, ThrowCorrectException throwCorrectException){
+    public AuthenticationService(PasswordEncoder passwordEncoder, UserRepository userRepository, JWTService jwtService, EmailService emailService, @Value("${client.application.address}") String clientApplicationAddress, ThrowCorrectException throwCorrectException, RefreshTokenRepository refreshTokenRepository) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.emailService = emailService;
         this.clientApplicationAddress = clientApplicationAddress;
         this.throwCorrectException = throwCorrectException;
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
+    //TODO: maybe if email already exists but is not confirmed and still has confirmationToken
+    //      generate new token, rewrite token&password and send it one more time?
     public BaseResponseDTO register(RegisterRequestDTO registerRequestDTO) {
         try {
             Optional<User> optionalUser = userRepository.findByEmail(registerRequestDTO.email());
@@ -119,31 +129,64 @@ public class AuthenticationService {
         }
     }
 
-    public LoginResponseDTO login(LoginRequestDTO loginRequestDTO){
+    public LoginResponseDTO login(LoginRequestDTO loginRequestDTO) {
         try {
             User user = getUserByEmail(loginRequestDTO.email());
-            if(!user.getIsConfirmed()){
-                throw new ValidationException("Email is not confirmed.");
+            if (!user.getIsConfirmed()) {
+                throw new ValidationException();
             }
             if (!passwordEncoder.matches(loginRequestDTO.password(), user.getPassword())) {
-                throw new ValidationException("Uncorrected password.");
+                throw new ValidationException();
             }
-            String accessToken = jwtService.getAccessToken(user.getEmail(), user.getRole());
-            String refreshToken = jwtService.getRefreshToken(user.getEmail());
-            int updatedRows = userRepository.updateRefreshToken(user.getId(), refreshToken);
-            if (updatedRows != 1) {
-                throw new RuntimeException("Something goes wrong while user updating.");
-            }
-            return new LoginResponseDTO(accessToken, refreshToken,"Successfully logged in.");
+            return generateTokensForUser(user, "Successfully logged in.");
+        } catch (UserNotFoundException | ValidationException ex) {
+            throw new ValidationException("Invalid email or password.");
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
         }
+    }
+
+    @Transactional
+    public LoginResponseDTO refreshToken(String refreshTokenValue) {
+        try {
+            Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByToken(refreshTokenValue);
+            if (optionalRefreshToken.isEmpty()) {
+                throw new JwtException("Refresh token could not be found.");
+            }
+            RefreshToken oldRefreshToken = optionalRefreshToken.get();
+            if (oldRefreshToken.getExpirationDate().isBefore(LocalDateTime.now())) {
+                throw new JwtException("Your token has been expired. Please log in again.");
+            }
+            User user = oldRefreshToken.getUser();
+            int deletedResult = refreshTokenRepository.deleteByToken(refreshTokenValue);
+            if (deletedResult != 1) {
+                throw new RuntimeException("Something goes wrong while refreshing token.");
+            }
+            return generateTokensForUser(user, "Token refreshed.");
+        } catch (Exception ex) {
+            throw throwCorrectException.handleException(ex);
+        }
+    }
+
+    private LoginResponseDTO generateTokensForUser(User user, String message) {
+        String newAccessToken = jwtService.getAccessToken(user.getEmail(), user.getRole());
+        String newRefreshTokenValue = jwtService.getRefreshToken(user.getEmail());
+        RefreshToken newRefreshToken  = new RefreshToken(newRefreshTokenValue, LocalDateTime.now().plusDays(jwtService.getEXPIRATION_DATE_DAYS()), user);
+        RefreshToken resultOfSave = refreshTokenRepository.save(newRefreshToken);
+        if (resultOfSave.getId() == null) {
+            throw new RuntimeException("Refresh token could not be saved.");
+        }
+        return new LoginResponseDTO(newAccessToken, newRefreshTokenValue, message);
     }
 
     private User foundUserByLongTermToken(String token){
         try {
             if (token.isBlank()){
                 throw new ValidationException("Tokens are empty.");
+            }
+            TokensType tokenType = jwtService.extractType(token);
+            if (tokenType != TokensType.LONG_TERM) {
+                throw new ValidationException("Token is not a valid token.");
             }
             String email = jwtService.extractEmail(token);
             return userRepository.findByEmail(email)
@@ -162,7 +205,28 @@ public class AuthenticationService {
         }
     }
 
-    //TODO: logout
-    //TODO: refresh-token
+    public void logout(String refreshTokenValue) {
+        try {
+            int deletedTokens = refreshTokenRepository.deleteByToken(refreshTokenValue);
+            if (deletedTokens != 1) {
+                throw new RuntimeException("Logout failed. Refresh token not found.");
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
+    public void logoutAllDevices(String accessToken) {
+        try {
+            String token = accessToken.replace("Bearer ", "");
+            String email = jwtService.extractEmail(token);
+
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+            int deletedTokens = refreshTokenRepository.deleteAllByUser(user);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 }
