@@ -3,6 +3,7 @@ package com.krzysiek.recruiting.exception;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.validation.ValidationException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +27,8 @@ public class ThrowCorrectException {
             throw new JwtException(ex.getMessage(), ex);
         } else if (ex instanceof IllegalArgumentException) {
             throw new IllegalArgumentException(ex.getMessage(), ex);
+        } else if (ex instanceof HttpMessageNotReadableException) {
+            throw new ValidationException(ex.getMessage(), ex);
         }
         return new RuntimeException("Error occurred: " + ex.getMessage());
     }

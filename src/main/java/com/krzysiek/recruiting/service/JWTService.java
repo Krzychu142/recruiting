@@ -1,6 +1,7 @@
 package com.krzysiek.recruiting.service;
 
 import com.krzysiek.recruiting.enums.Role;
+import com.krzysiek.recruiting.enums.TokensType;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -47,15 +48,20 @@ public class JWTService {
     }
 
     public String getLongTermToken(String email){
-        return encodeToken(email, null, EXPIRATION_DATE_H, MILLISECONDS_IN_AN_HOUR);
+        return encodeToken(email, TokensType.LONG_TERM, null, EXPIRATION_DATE_H, MILLISECONDS_IN_AN_HOUR);
     }
 
     public String getAccessToken(String email, Role role){
-        return encodeToken(email, role, EXPIRATION_DATE_MINUTES, MILLISECONDS_IN_A_MINUTE);
+        return encodeToken(email, TokensType.ACCESS, role, EXPIRATION_DATE_MINUTES, MILLISECONDS_IN_A_MINUTE);
     }
 
     public String getRefreshToken(String email){
-        return encodeToken(email, null, EXPIRATION_DATE_DAYS, MILLISECONDS_IN_A_DAY);
+        return encodeToken(email, TokensType.REFRESH, null, EXPIRATION_DATE_DAYS, MILLISECONDS_IN_A_DAY);
+    }
+
+    public TokensType extractType(String JWTToken){
+        String typeString = extractClaims(JWTToken).get("type", String.class);
+        return typeString != null ? TokensType.valueOf(typeString) : null;
     }
 
     public String extractEmail(String JWTToken) {
@@ -67,7 +73,7 @@ public class JWTService {
         return roleString != null ? Role.valueOf(roleString) : null;
     }
 
-    private String encodeToken(String email, Role role, Long expirationDateTime, Long millisecondsMultiplier) {
+    private String encodeToken(String email, TokensType tokensType, Role role, Long expirationDateTime, Long millisecondsMultiplier) {
         try {
             byte[] decodedKey = Base64.getUrlDecoder().decode(JWT_SECRET_KEY);
             Key key = new SecretKeySpec(decodedKey, ALGORITHM);
@@ -75,7 +81,8 @@ public class JWTService {
             var builder = Jwts.builder()
                     .subject(email)
                     .expiration(new Date(System.currentTimeMillis() + expirationDateTime * millisecondsMultiplier))
-                    .signWith(key);
+                    .signWith(key)
+                    .claim("type", tokensType.toString());
 
 
             if (role != null) {

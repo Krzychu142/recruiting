@@ -1,6 +1,7 @@
 package com.krzysiek.recruiting.filter;
 
 import com.krzysiek.recruiting.enums.Role;
+import com.krzysiek.recruiting.enums.TokensType;
 import com.krzysiek.recruiting.service.JWTService;
 import io.micrometer.common.lang.NonNullApi;
 import jakarta.servlet.FilterChain;
@@ -36,8 +37,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        // 7 == "Bearer "
-        final String token = authHeader.substring(7);
+        final String token = authHeader.replaceFirst("Bearer ", "");
+        TokensType tokensType = jwtService.extractType(token);
+        if (tokensType != TokensType.ACCESS) {
+            filterChain.doFilter(request, response);
+        }
         String email = jwtService.extractEmail(token);
         Role role = jwtService.extractRole(token);
         List<SimpleGrantedAuthority> authorities = role != null
