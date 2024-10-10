@@ -32,6 +32,8 @@ public class AuthenticationService {
         this.throwCorrectException = throwCorrectException;
     }
 
+    //TODO: maybe if email already exists but is not confirmed and still has confirmationToken
+    //      generate new token, rewrite token&password and send it one more time?
     public BaseResponseDTO register(RegisterRequestDTO registerRequestDTO) {
         try {
             Optional<User> optionalUser = userRepository.findByEmail(registerRequestDTO.email());
@@ -119,14 +121,14 @@ public class AuthenticationService {
         }
     }
 
-    public LoginResponseDTO login(LoginRequestDTO loginRequestDTO){
+    public LoginResponseDTO login(LoginRequestDTO loginRequestDTO) {
         try {
             User user = getUserByEmail(loginRequestDTO.email());
-            if(!user.getIsConfirmed()){
-                throw new ValidationException("Email is not confirmed.");
+            if (!user.getIsConfirmed()) {
+                throw new ValidationException();
             }
             if (!passwordEncoder.matches(loginRequestDTO.password(), user.getPassword())) {
-                throw new ValidationException("Uncorrected password.");
+                throw new ValidationException();
             }
             String accessToken = jwtService.getAccessToken(user.getEmail(), user.getRole());
             String refreshToken = jwtService.getRefreshToken(user.getEmail());
@@ -134,7 +136,9 @@ public class AuthenticationService {
             if (updatedRows != 1) {
                 throw new RuntimeException("Something goes wrong while user updating.");
             }
-            return new LoginResponseDTO(accessToken, refreshToken,"Successfully logged in.");
+            return new LoginResponseDTO(accessToken, refreshToken, "Successfully logged in.");
+        } catch (UserNotFoundException | ValidationException ex) {
+            throw new ValidationException("Invalid email or password.");
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
         }

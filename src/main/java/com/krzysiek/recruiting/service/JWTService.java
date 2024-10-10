@@ -58,6 +58,15 @@ public class JWTService {
         return encodeToken(email, null, EXPIRATION_DATE_DAYS, MILLISECONDS_IN_A_DAY);
     }
 
+    public String extractEmail(String JWTToken) {
+        return extractClaims(JWTToken).getSubject();
+    }
+
+    public Role extractRole(String JWTToken) {
+        String roleString = extractClaims(JWTToken).get("role", String.class);
+        return roleString != null ? Role.valueOf(roleString) : null;
+    }
+
     private String encodeToken(String email, Role role, Long expirationDateTime, Long millisecondsMultiplier) {
         try {
             byte[] decodedKey = Base64.getUrlDecoder().decode(JWT_SECRET_KEY);
@@ -79,16 +88,15 @@ public class JWTService {
         }
     }
 
-    public String extractEmail(String JWTToken) {
+    private Claims extractClaims(String JWTToken) {
         try {
             byte[] decodedKey = Base64.getUrlDecoder().decode(JWT_SECRET_KEY);
             SecretKey secretKey = new SecretKeySpec(decodedKey, ALGORITHM);
-            Claims claims = Jwts.parser()
+            return Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(JWTToken)
                     .getPayload();
-            return claims.getSubject();
 
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);

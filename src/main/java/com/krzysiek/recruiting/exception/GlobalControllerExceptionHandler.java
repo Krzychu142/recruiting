@@ -17,11 +17,11 @@ import java.util.List;
 
 
 @RestControllerAdvice
-public class GlobalExceptionHandler extends BaseExceptionHandler{
+public class GlobalControllerExceptionHandler extends BaseExceptionHandler{
 
     private final EmailService emailService;
 
-    public GlobalExceptionHandler(EmailService emailService) {
+    public GlobalControllerExceptionHandler(EmailService emailService) {
         this.emailService = emailService;
     }
 
