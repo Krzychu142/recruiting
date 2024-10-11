@@ -61,6 +61,11 @@ public class GlobalControllerExceptionHandler extends BaseExceptionHandler{
         return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.METHOD_NOT_ALLOWED));
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponseDTO> handleIllegalStateException(IllegalStateException ex, HttpServletRequest servletRequest){
+        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.UNAUTHORIZED));
+    }
+
     @ExceptionHandler(Exception.class)
     // request for more information about exception
     public ResponseEntity<ErrorResponseDTO> handleGlobalException(Exception ex, WebRequest request, HttpServletRequest servletRequest) {

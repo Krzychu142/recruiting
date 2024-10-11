@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    @Mapping(source = "files", target = "fileIds", qualifiedByName = "fileToId")
-    @Mapping(source = "recruitmentProcesses", target = "recruitmentProcessIds", qualifiedByName = "processToId")
+    @Mapping(target = "fileIds", ignore = true)
+    @Mapping(target = "recruitmentProcessIds", ignore = true)
     UserDTO toDTO(User user);
 
     @Mapping(target = "password", ignore = true)

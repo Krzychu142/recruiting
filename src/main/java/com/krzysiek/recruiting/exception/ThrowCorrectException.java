@@ -29,6 +29,8 @@ public class ThrowCorrectException {
             throw new IllegalArgumentException(ex.getMessage(), ex);
         } else if (ex instanceof HttpMessageNotReadableException) {
             throw new ValidationException(ex.getMessage(), ex);
+        } else if (ex instanceof IllegalStateException) {
+            throw new IllegalStateException(ex.getMessage(), ex);
         }
         return new RuntimeException("Error occurred: " + ex.getMessage());
     }
