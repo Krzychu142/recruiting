@@ -5,6 +5,7 @@ import com.krzysiek.recruiting.enums.TokensType;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import com.krzysiek.recruiting.exception.UserAlreadyExistsException;
 import com.krzysiek.recruiting.exception.UserNotFoundException;
+import com.krzysiek.recruiting.mapper.UserMapper;
 import com.krzysiek.recruiting.model.RefreshToken;
 import com.krzysiek.recruiting.model.User;
 import com.krzysiek.recruiting.repository.RefreshTokenRepository;
@@ -13,6 +14,8 @@ import io.jsonwebtoken.JwtException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,8 +32,9 @@ public class AuthenticationService {
     private final String clientApplicationAddress;
     private final ThrowCorrectException throwCorrectException;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final UserMapper userMapper;
 
-    public AuthenticationService(PasswordEncoder passwordEncoder, UserRepository userRepository, JWTService jwtService, EmailService emailService, @Value("${client.application.address}") String clientApplicationAddress, ThrowCorrectException throwCorrectException, RefreshTokenRepository refreshTokenRepository) {
+    public AuthenticationService(PasswordEncoder passwordEncoder, UserRepository userRepository, JWTService jwtService, EmailService emailService, @Value("${client.application.address}") String clientApplicationAddress, ThrowCorrectException throwCorrectException, RefreshTokenRepository refreshTokenRepository, UserMapper userMapper) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.jwtService = jwtService;
@@ -38,6 +42,7 @@ public class AuthenticationService {
         this.clientApplicationAddress = clientApplicationAddress;
         this.throwCorrectException = throwCorrectException;
         this.refreshTokenRepository = refreshTokenRepository;
+        this.userMapper = userMapper;
     }
 
     //TODO: maybe if email already exists but is not confirmed and still has confirmationToken
@@ -191,6 +196,21 @@ public class AuthenticationService {
             String email = jwtService.extractEmail(token);
             return userRepository.findByEmail(email)
                     .orElseThrow(() -> new UserNotFoundException("Bad token - owner of this token not found."));
+        } catch (Exception ex) {
+            throw throwCorrectException.handleException(ex);
+        }
+    }
+
+    public UserDTO getUserDTOFromSecurityContext() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.isAuthenticated()) {
+                String email = authentication.getPrincipal().toString();
+                User user = getUserByEmail(email);
+                return userMapper.toDTO(user);
+            }
+
+            throw new IllegalStateException("User is not authenticated");
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
         }

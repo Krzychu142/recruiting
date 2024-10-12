@@ -29,4 +29,6 @@ public class File {
     @Column(nullable = false)
     private String link;
 
+    public File(){}
+
 }

@@ -19,11 +19,11 @@ public class Application {
 		log.info("Application started successfully!");
 	}
 
-	@Bean
-	CommandLineRunner runner() {
-		return args -> {
-			FileDTO  fileDto = new FileDTO(1L, 2L, FileType.CV, "link");
-			System.out.println(fileDto);
-		};
-	}
+//	@Bean
+//	CommandLineRunner runner() {
+//		return args -> {
+//			FileDTO  fileDto = new FileDTO(1L, 2L, FileType.CV, "link");
+//			System.out.println(fileDto);
+//		};
+//	}
 }
