@@ -14,6 +14,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -101,10 +102,21 @@ public class GlobalControllerExceptionHandler extends BaseExceptionHandler{
         return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.NOT_FOUND));
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponseDTO> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest servletRequest) {
+        HttpStatus status = resolveResponseStatus(ex);
+        return handleException(getErrorResponseDTO(ex, servletRequest, status));
+    }
+
     @ExceptionHandler(Exception.class)
     // request for more information about exception
     public ResponseEntity<ErrorResponseDTO> handleGlobalException(Exception ex, WebRequest request, HttpServletRequest servletRequest) {
         emailService.sendErrorEmail(ex);
         return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.INTERNAL_SERVER_ERROR));
+    }
+
+    private HttpStatus resolveResponseStatus(Exception ex) {
+        ResponseStatus responseStatus = ex.getClass().getAnnotation(ResponseStatus.class);
+        return (responseStatus != null) ? responseStatus.value() : HttpStatus.INTERNAL_SERVER_ERROR;
     }
 }

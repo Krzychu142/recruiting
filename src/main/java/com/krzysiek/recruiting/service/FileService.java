@@ -2,15 +2,16 @@ package com.krzysiek.recruiting.service;
 
 import com.krzysiek.recruiting.config.StorageProperties;
 import com.krzysiek.recruiting.dto.FileDTO;
+import com.krzysiek.recruiting.dto.UserDTO;
 import com.krzysiek.recruiting.enums.FileType;
+import com.krzysiek.recruiting.exception.AccessDeniedException;
 import com.krzysiek.recruiting.exception.StorageException;
+import com.krzysiek.recruiting.exception.StorageFileNotFoundException;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
-import com.krzysiek.recruiting.exception.UserNotFoundException;
 import com.krzysiek.recruiting.mapper.FileMapper;
 import com.krzysiek.recruiting.model.File;
 import com.krzysiek.recruiting.model.User;
 import com.krzysiek.recruiting.repository.FileRepository;
-import com.krzysiek.recruiting.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @Service
@@ -34,17 +36,15 @@ public class FileService implements StorageService {
     private final AuthenticationService authenticationService;
     private final Path rootLocation;
     private final StorageProperties storageProperties;
-    private final UserRepository userRepository;
     private final FileMapper fileMapper;
 
 
-    public FileService(FileRepository fileRepository, ThrowCorrectException throwCorrectException, AuthenticationService authenticationService, StorageProperties storageProperties, UserRepository userRepository, FileMapper fileMapper) {
+    public FileService(FileRepository fileRepository, ThrowCorrectException throwCorrectException, AuthenticationService authenticationService, StorageProperties storageProperties, FileMapper fileMapper) {
         this.fileRepository = fileRepository;
         this.throwCorrectException = throwCorrectException;
         this.authenticationService = authenticationService;
         this.rootLocation = Paths.get(storageProperties.getLocation());
         this.storageProperties = storageProperties;
-        this.userRepository = userRepository;
         this.fileMapper = fileMapper;
         init();
     }
@@ -127,8 +127,14 @@ public class FileService implements StorageService {
     @Override
     public void delete(Long fileId, FileType fileType) {
         try {
-            // get file name, extension, path and user (owner) by id
-            // check is current user is owner of file
+            FileDTO fileDTO = fileMapper.toDTO(fileRepository.findById(fileId)
+                    .orElseThrow(() -> new StorageFileNotFoundException("File with provided id not found.")));
+            UserDTO userDTO = authenticationService.getUserDTOFromSecurityContext();
+
+            if (!Objects.equals(fileDTO.getUserId(), userDTO.id())){
+                throw new AccessDeniedException("Access denied - You are not owner of this file.");
+            }
+            // check - is current user owner of file
             // try to delete file from path
             // delete file from database
         } catch (Exception ex) {
@@ -142,8 +148,7 @@ public class FileService implements StorageService {
     }
 
     private void saveFileToDatabase(FileDTO fileDTO){
-        User user = userRepository.findById(fileDTO.getUserId())
-                .orElseThrow(() -> new UserNotFoundException("User with ID not found: " + fileDTO.getUserId()));
+        User user = authenticationService.getUserByEmail(authenticationService.getUserDTOFromSecurityContext().email());
         File file = fileMapper.toEntity(fileDTO);
         file.setUser(user);
         fileRepository.save(file);

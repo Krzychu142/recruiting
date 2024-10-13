@@ -35,6 +35,8 @@ public class ThrowCorrectException {
             throw new StorageFileNotFoundException(ex.getMessage(), ex);
         } else if (ex instanceof StorageException) {
             throw new StorageException(ex.getMessage(), ex);
+        } else if (ex instanceof AccessDeniedException) {
+            throw new AccessDeniedException(ex.getMessage());
         }
         return new RuntimeException("Error occurred: " + ex.getMessage());
     }
