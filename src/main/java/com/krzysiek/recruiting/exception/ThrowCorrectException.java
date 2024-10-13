@@ -31,6 +31,10 @@ public class ThrowCorrectException {
             throw new ValidationException(ex.getMessage(), ex);
         } else if (ex instanceof IllegalStateException) {
             throw new IllegalStateException(ex.getMessage(), ex);
+        } else if (ex instanceof StorageFileNotFoundException) {
+            throw new StorageFileNotFoundException(ex.getMessage(), ex);
+        } else if (ex instanceof StorageException) {
+            throw new StorageException(ex.getMessage(), ex);
         }
         return new RuntimeException("Error occurred: " + ex.getMessage());
     }

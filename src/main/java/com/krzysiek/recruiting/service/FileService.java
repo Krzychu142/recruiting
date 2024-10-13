@@ -1,9 +1,17 @@
 package com.krzysiek.recruiting.service;
 
 import com.krzysiek.recruiting.config.StorageProperties;
+import com.krzysiek.recruiting.dto.FileDTO;
+import com.krzysiek.recruiting.enums.FileType;
 import com.krzysiek.recruiting.exception.StorageException;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
+import com.krzysiek.recruiting.exception.UserNotFoundException;
+import com.krzysiek.recruiting.mapper.FileMapper;
+import com.krzysiek.recruiting.model.File;
+import com.krzysiek.recruiting.model.User;
 import com.krzysiek.recruiting.repository.FileRepository;
+import com.krzysiek.recruiting.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +22,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.stream.Stream;
 
 @Service
@@ -24,14 +34,18 @@ public class FileService implements StorageService {
     private final AuthenticationService authenticationService;
     private final Path rootLocation;
     private final StorageProperties storageProperties;
+    private final UserRepository userRepository;
+    private final FileMapper fileMapper;
 
 
-    public FileService(FileRepository fileRepository, ThrowCorrectException throwCorrectException, AuthenticationService authenticationService, StorageProperties storageProperties) {
+    public FileService(FileRepository fileRepository, ThrowCorrectException throwCorrectException, AuthenticationService authenticationService, StorageProperties storageProperties, UserRepository userRepository, FileMapper fileMapper) {
         this.fileRepository = fileRepository;
         this.throwCorrectException = throwCorrectException;
         this.authenticationService = authenticationService;
         this.rootLocation = Paths.get(storageProperties.getLocation());
         this.storageProperties = storageProperties;
+        this.userRepository = userRepository;
+        this.fileMapper = fileMapper;
         init();
     }
 
@@ -44,35 +58,42 @@ public class FileService implements StorageService {
         }
     }
 
+    @Transactional
     @Override
-    public void store(MultipartFile file) {
+    public void store(MultipartFile file, FileType fileType) {
         try {
             if (file.isEmpty()) {
                 throw new StorageException("File cannot be empty");
             }
+
             String fileName = file.getOriginalFilename();
             if (fileName == null || fileName.isEmpty()) {
                 throw new StorageException("Filename cannot be empty");
             }
+
             String extension = getFileExtension(file.getOriginalFilename());
-            if (!storageProperties.getAllowedExtensions().contains(getFileExtension(extension))) {
+            if (!storageProperties.getAllowedExtensions().contains(extension)) {
                 throw new StorageException("Bad file extension: " + extension + ". All allowed extensions are: " + storageProperties.getAllowedExtensions());
             }
+
+            Long ownerId = getFileOwnerId();
+            String uniqueFileName = createUniqueFileName(fileName, ownerId);
+            if (isFileAlreadyExists(uniqueFileName)) {
+                throw new StorageException("File already exists");
+            }
+
             Path destinationFile = this.rootLocation.resolve(
-                    Paths.get(fileName))
+                    Paths.get(uniqueFileName))
                     .normalize().toAbsolutePath();
 
             if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
                 throw new StorageException("Destination file path does not match stored location");
             }
 
-            // createCustomFileName - based on o.g. file name and user (owner) email and data of creation?
-            // check is file already exist - if true throw exception to prevent replace file
-
             try (InputStream inputStream = file.getInputStream()) {
                 Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
             }
-
+            saveFileToDatabase(new FileDTO(fileName, ownerId, extension, fileType, load(uniqueFileName).toString()));
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
         }
@@ -80,12 +101,20 @@ public class FileService implements StorageService {
 
     @Override
     public Stream<Path> loadAll() {
-        return Stream.empty();
+        try (Stream<Path> paths = Files.walk(this.rootLocation, 1)) {
+            return paths
+                    .filter(path -> !path.equals(this.rootLocation))
+                    .map(this.rootLocation::relativize)
+                    .toList()
+                    .stream();
+        } catch (IOException e) {
+            throw new StorageException("Failed to read stored files", e);
+        }
     }
 
     @Override
     public Path load(String filename) {
-        return null;
+        return rootLocation.resolve(filename);
     }
 
     @Override
@@ -103,12 +132,28 @@ public class FileService implements StorageService {
         return parts.length > 1 ? parts[parts.length - 1].toLowerCase() : "";
     }
 
-    private String createUniqueFileName(String filename) {
-        return "Final custom name";
+    private void saveFileToDatabase(FileDTO fileDTO){
+        User user = userRepository.findById(fileDTO.getUserId())
+                .orElseThrow(() -> new UserNotFoundException("User with ID not found: " + fileDTO.getUserId()));
+        File file = fileMapper.toEntity(fileDTO);
+        file.setUser(user);
+        fileRepository.save(file);
     }
 
-    private Boolean isFileAlreadyExists(){
-        return false;
+    private String createUniqueFileName(String filename, Long ownerId) {
+        Date dateNow = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String dateString = formatter.format(dateNow);
+        return ownerId + "_" + dateString + "_" + filename;
+    }
+
+    private Boolean isFileAlreadyExists(String filename) {
+        Path filePath = load(filename);
+        return Files.exists(filePath);
+    }
+
+    private Long getFileOwnerId(){
+        return authenticationService.getUserDTOFromSecurityContext().id();
     }
 
 }

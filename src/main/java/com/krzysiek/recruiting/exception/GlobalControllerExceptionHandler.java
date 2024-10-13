@@ -12,9 +12,11 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.util.List;
@@ -61,7 +63,7 @@ public class GlobalControllerExceptionHandler extends BaseExceptionHandler{
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponseDTO> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, HttpServletRequest servletRequest){
-        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.METHOD_NOT_ALLOWED));
+        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.BAD_REQUEST));
     }
 
     @ExceptionHandler(IllegalStateException.class)
@@ -71,12 +73,32 @@ public class GlobalControllerExceptionHandler extends BaseExceptionHandler{
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ErrorResponseDTO> handleMaxSizeExceededException(MaxUploadSizeExceededException ex, HttpServletRequest servletRequest){
-        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.BAD_REQUEST));
+        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.PAYLOAD_TOO_LARGE ));
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<ErrorResponseDTO> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException ex, HttpServletRequest servletRequest){
         return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponseDTO> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex, HttpServletRequest servletRequest){
+        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponseDTO> handleMissingServletRequestParameterException(MissingServletRequestParameterException ex, HttpServletRequest servletRequest){
+        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(StorageException.class)
+    public ResponseEntity<ErrorResponseDTO> handleStorageException(StorageException ex, HttpServletRequest servletRequest){
+        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(StorageFileNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleStorageFileNotFoundException(StorageFileNotFoundException ex, HttpServletRequest servletRequest){
+        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.NOT_FOUND));
     }
 
     @ExceptionHandler(Exception.class)
