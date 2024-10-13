@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/authentication/login", "/authentication/register", "/authentication/confirm-email").anonymous()
                         .requestMatchers("/authentication/send-reset-password-link", "/authentication/reset-password","authentication/refresh-token","/error").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

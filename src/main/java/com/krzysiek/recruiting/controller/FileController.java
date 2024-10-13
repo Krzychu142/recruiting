@@ -1,8 +1,10 @@
 package com.krzysiek.recruiting.controller;
 
 import com.krzysiek.recruiting.dto.BaseResponseDTO;
+import com.krzysiek.recruiting.dto.DeleteFileRequestDTO;
 import com.krzysiek.recruiting.enums.FileType;
 import com.krzysiek.recruiting.service.FileService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +27,9 @@ public class FileController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteFileById() {
+    public ResponseEntity<?> deleteFileById(@Valid @RequestBody DeleteFileRequestDTO deleteFileRequestDTO) {
+        System.out.println(deleteFileRequestDTO.fileId());
+        System.out.println(deleteFileRequestDTO.fileType());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
