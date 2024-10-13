@@ -9,11 +9,14 @@ import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+
 import java.util.List;
 
 
@@ -64,6 +67,16 @@ public class GlobalControllerExceptionHandler extends BaseExceptionHandler{
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ErrorResponseDTO> handleIllegalStateException(IllegalStateException ex, HttpServletRequest servletRequest){
         return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.UNAUTHORIZED));
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponseDTO> handleMaxSizeExceededException(MaxUploadSizeExceededException ex, HttpServletRequest servletRequest){
+        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<ErrorResponseDTO> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException ex, HttpServletRequest servletRequest){
+        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.BAD_REQUEST));
     }
 
     @ExceptionHandler(Exception.class)
