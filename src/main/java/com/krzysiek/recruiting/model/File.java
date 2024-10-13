@@ -18,16 +18,19 @@ public class File {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private String extension;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "file_type", nullable = false)
     private FileType fileType;
 
     @Column(nullable = false)
-    private String link;
+    private String path;
 
     public File(){}
 
