@@ -122,9 +122,17 @@ public class FileService implements StorageService {
         return null;
     }
 
+    @Transactional
     @Override
     public void delete(Long fileId, FileType fileType) {
-
+        try {
+            // get file name, extension, path and user (owner) by id
+            // check is current user is owner of file
+            // try to delete file from path
+            // delete file from database
+        } catch (Exception ex) {
+            throw throwCorrectException.handleException(ex);
+        }
     }
 
     private String getFileExtension(String filename) {
