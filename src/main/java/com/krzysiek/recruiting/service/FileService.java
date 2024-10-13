@@ -135,8 +135,13 @@ public class FileService implements StorageService {
                 throw new AccessDeniedException("Access denied - You are not owner of this file.");
             }
 
-            // try to delete file from path
-            // delete file from database
+            if (!isFileAlreadyExists(fileDTO.getName())) {
+                throw new StorageFileNotFoundException("File with provided name not found.");
+            }
+            Path filePath = load(fileDTO.getPath());
+            Files.deleteIfExists(filePath);
+            fileRepository.deleteById(fileId);
+
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
         }

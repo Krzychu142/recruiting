@@ -34,8 +34,10 @@ public class FileController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getFileByName() {
+    public ResponseEntity<?> getFileByNameAndType() {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+    //TODO: getAllUserFiles - or list of file - make it pageable!
+
 
 }
