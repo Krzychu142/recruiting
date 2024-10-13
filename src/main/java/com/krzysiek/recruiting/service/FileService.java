@@ -76,7 +76,7 @@ public class FileService implements StorageService {
                 throw new StorageException("Bad file extension: " + extension + ". All allowed extensions are: " + storageProperties.getAllowedExtensions());
             }
 
-            Long ownerId = getFileOwnerId();
+            Long ownerId = getCurrentUserId();
             String uniqueFileName = createUniqueFileName(fileName, ownerId);
             if (isFileAlreadyExists(uniqueFileName)) {
                 throw new StorageException("File already exists");
@@ -134,7 +134,7 @@ public class FileService implements StorageService {
             if (!Objects.equals(fileDTO.getUserId(), userDTO.id())){
                 throw new AccessDeniedException("Access denied - You are not owner of this file.");
             }
-            // check - is current user owner of file
+
             // try to delete file from path
             // delete file from database
         } catch (Exception ex) {
@@ -166,7 +166,7 @@ public class FileService implements StorageService {
         return Files.exists(filePath);
     }
 
-    private Long getFileOwnerId(){
+    private Long getCurrentUserId(){
         return authenticationService.getUserDTOFromSecurityContext().id();
     }
 
