@@ -58,7 +58,7 @@ public class FileService implements StorageService {
         }
     }
 
-    @Transactional
+    @Transactional(rollbackOn = Exception.class)
     @Override
     public void store(MultipartFile file, FileType fileType) {
         try {
@@ -122,7 +122,8 @@ public class FileService implements StorageService {
         return null;
     }
 
-    @Transactional
+
+    @Transactional(rollbackOn = Exception.class)
     @Override
     public void delete(Long fileId, FileType fileType) {
         try {

@@ -151,7 +151,8 @@ public class AuthenticationService {
         }
     }
 
-    @Transactional
+
+    @Transactional(rollbackOn = Exception.class)
     public LoginResponseDTO refreshToken(String refreshTokenValue) {
         try {
             Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByToken(refreshTokenValue);
