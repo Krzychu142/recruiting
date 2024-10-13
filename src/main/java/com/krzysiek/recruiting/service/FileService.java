@@ -123,7 +123,7 @@ public class FileService implements StorageService {
     }
 
     @Override
-    public void delete(String filename) {
+    public void delete(Long fileId, FileType fileType) {
 
     }
 
