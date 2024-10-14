@@ -151,7 +151,8 @@ public class AuthenticationService {
         }
     }
 
-    @Transactional
+
+    @Transactional(rollbackOn = Exception.class)
     public LoginResponseDTO refreshToken(String refreshTokenValue) {
         try {
             Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByToken(refreshTokenValue);
@@ -216,7 +217,7 @@ public class AuthenticationService {
         }
     }
 
-    private User getUserByEmail(String email){
+    public User getUserByEmail(String email){
         try {
             return userRepository.findByEmail(email)
                     .orElseThrow(() -> new UserNotFoundException("User with provided email not found."));
