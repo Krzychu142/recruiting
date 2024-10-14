@@ -14,6 +14,9 @@ import com.krzysiek.recruiting.model.User;
 import com.krzysiek.recruiting.repository.FileRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,8 +28,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 @Service
 public class FileService implements StorageService {
@@ -100,15 +104,17 @@ public class FileService implements StorageService {
     }
 
     @Override
-    public Stream<Path> loadAll() {
-        try (Stream<Path> paths = Files.walk(this.rootLocation, 1)) {
-            return paths
-                    .filter(path -> !path.equals(this.rootLocation))
-                    .map(this.rootLocation::relativize)
-                    .toList()
-                    .stream();
-        } catch (IOException e) {
-            throw new StorageException("Failed to read stored files", e);
+    public List<FileDTO> loadAll(int pageNumber) {
+        try {
+            UserDTO userDTO = authenticationService.getUserDTOFromSecurityContext();
+            Pageable pageable = PageRequest.of(pageNumber, 5);
+            Page<File> userFilesPage = fileRepository.findByUserId(userDTO.id(), pageable);
+
+            return userFilesPage.getContent().stream()
+                    .map(fileMapper::toDTO)
+                    .collect(Collectors.toList());
+        } catch (Exception ex) {
+            throw throwCorrectException.handleException(ex);
         }
     }
 

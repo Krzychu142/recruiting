@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 
@@ -106,6 +109,21 @@ public class GlobalControllerExceptionHandler extends BaseExceptionHandler{
     public ResponseEntity<ErrorResponseDTO> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest servletRequest) {
         HttpStatus status = resolveResponseStatus(ex);
         return handleException(getErrorResponseDTO(ex, servletRequest, status));
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<ErrorResponseDTO> handleMissingServletRequestPartException(MissingServletRequestPartException ex, HttpServletRequest servletRequest) {
+        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(MultipartException.class)
+    public ResponseEntity<ErrorResponseDTO> handleMultipartException(MultipartException ex, HttpServletRequest servletRequest) {
+        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleNoResourceFoundException(NoResourceFoundException ex, HttpServletRequest servletRequest) {
+        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.NOT_FOUND));
     }
 
     @ExceptionHandler(Exception.class)
