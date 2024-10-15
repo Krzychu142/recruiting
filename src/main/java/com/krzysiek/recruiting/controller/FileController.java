@@ -7,6 +7,8 @@ import com.krzysiek.recruiting.enums.FileType;
 import com.krzysiek.recruiting.service.FileService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,20 +37,16 @@ public class FileController {
     }
 
     @GetMapping
-    public ResponseEntity<BaseResponseDTO> loadUserFilesList(@RequestParam(name = "page-number", defaultValue = "0") @Min(0) int pageNumber) {
+    public ResponseEntity<LoadAllFileResponseDTO> loadUserFilesList(@RequestParam(name = "page-number", defaultValue = "0") @Min(0) int pageNumber) {
         return ResponseEntity.status(HttpStatus.OK).body(new LoadAllFileResponseDTO("Files", fileService.loadAll(pageNumber)));
     }
 
-//    @GetMapping
-//    public ResponseEntity<?> getFileByNameAndType() {
-//        return ResponseEntity.status(HttpStatus.OK).build();
-//    }
-//
-//    //TODO: getAllUserFiles - or list of file - make it pageable!
-//    @GetMapping("/all")
-//    public ResponseEntity<?> getAllUserFiles() {
-//        return ResponseEntity.status(HttpStatus.OK).build();
-//    }
-
+    @GetMapping("/resource")
+    public ResponseEntity<Resource> loadAsResource(@RequestParam(name = "id") @Min(0) Long fileId) {
+        Resource fileResource = fileService.loadAsResource(fileId);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileResource.getFilename() + "\"")
+                .body(fileResource);
+    }
 
 }

@@ -138,14 +138,12 @@ public class AuthenticationService {
         try {
             User user = getUserByEmail(loginRequestDTO.email());
             if (!user.getIsConfirmed()) {
-                throw new ValidationException();
+                throw new ValidationException("Account not confirmed.");
             }
             if (!passwordEncoder.matches(loginRequestDTO.password(), user.getPassword())) {
-                throw new ValidationException();
+                throw new ValidationException("Email or password is incorrect.");
             }
             return generateTokensForUser(user, "Successfully logged in.");
-        } catch (UserNotFoundException | ValidationException ex) {
-            throw new ValidationException("Invalid email or password.");
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
         }

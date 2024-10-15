@@ -14,7 +14,7 @@ public interface StorageService {
     void store(MultipartFile file, FileType fileType);
     List<FileDTO> loadAll(int pageNumber);
     Path load(String filename);
-    Resource loadAsResource(String filename);
+    Resource loadAsResource(Long fileId);
     void delete(Long fileId, FileType fileType);
 
 }

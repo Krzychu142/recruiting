@@ -2,7 +2,6 @@ package com.krzysiek.recruiting.service;
 
 import com.krzysiek.recruiting.config.StorageProperties;
 import com.krzysiek.recruiting.dto.FileDTO;
-import com.krzysiek.recruiting.dto.UserDTO;
 import com.krzysiek.recruiting.enums.FileType;
 import com.krzysiek.recruiting.exception.AccessDeniedException;
 import com.krzysiek.recruiting.exception.StorageException;
@@ -14,6 +13,7 @@ import com.krzysiek.recruiting.model.User;
 import com.krzysiek.recruiting.repository.FileRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -97,7 +97,7 @@ public class FileService implements StorageService {
             try (InputStream inputStream = file.getInputStream()) {
                 Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
             }
-            saveFileToDatabase(new FileDTO(fileName, ownerId, extension, fileType, load(uniqueFileName).toString()));
+            saveFileToDatabase(new FileDTO(uniqueFileName, ownerId, extension, fileType, load(uniqueFileName).toString()));
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
         }
@@ -106,9 +106,8 @@ public class FileService implements StorageService {
     @Override
     public List<FileDTO> loadAll(int pageNumber) {
         try {
-            UserDTO userDTO = authenticationService.getUserDTOFromSecurityContext();
             Pageable pageable = PageRequest.of(pageNumber, 5);
-            Page<File> userFilesPage = fileRepository.findByUserId(userDTO.id(), pageable);
+            Page<File> userFilesPage = fileRepository.findByUserId(getCurrentUserId(), pageable);
 
             return userFilesPage.getContent().stream()
                     .map(fileMapper::toDTO)
@@ -124,8 +123,21 @@ public class FileService implements StorageService {
     }
 
     @Override
-    public Resource loadAsResource(String filename) {
-        return null;
+    public Resource loadAsResource(Long fileId) {
+        try {
+            FileDTO fileDTO = getFileDTOById(fileId);
+            validateUserAccessAndFileExistence(fileDTO);
+            Path filePath = Paths.get(fileDTO.getPath()).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (!resource.exists() || !resource.isReadable()) {
+                throw new StorageFileNotFoundException("File not found or not readable: " + fileDTO.getPath());
+            }
+
+            return resource;
+        } catch (Exception ex) {
+            throw throwCorrectException.handleException(ex);
+        }
     }
 
 
@@ -133,25 +145,32 @@ public class FileService implements StorageService {
     @Override
     public void delete(Long fileId, FileType fileType) {
         try {
-            FileDTO fileDTO = fileMapper.toDTO(fileRepository.findById(fileId)
-                    .orElseThrow(() -> new StorageFileNotFoundException("File with provided id not found.")));
-            UserDTO userDTO = authenticationService.getUserDTOFromSecurityContext();
-
-            if (!Objects.equals(fileDTO.getUserId(), userDTO.id())){
-                throw new AccessDeniedException("Access denied - You are not owner of this file.");
-            }
-
-            if (!isFileAlreadyExists(fileDTO.getName())) {
-                throw new StorageFileNotFoundException("File with provided name not found.");
-            }
-            Path filePath = load(fileDTO.getPath());
-            Files.deleteIfExists(filePath);
+            FileDTO fileDTO = getFileDTOById(fileId);
+            validateUserAccessAndFileExistence(fileDTO);
+            Path filePath = Path.of(fileDTO.getPath());
+            Files.delete(filePath);
             fileRepository.deleteById(fileId);
 
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
         }
     }
+
+    private FileDTO getFileDTOById(Long fileId) {
+        return fileMapper.toDTO(fileRepository.findById(fileId)
+                .orElseThrow(() -> new StorageFileNotFoundException("File with provided id not found.")));
+    }
+
+    private void validateUserAccessAndFileExistence(FileDTO fileDTO) {
+        if (!Objects.equals(fileDTO.getUserId(), getCurrentUserId())) {
+            throw new AccessDeniedException("Access denied - You are not owner of this file.");
+        }
+
+        if (!isFileAlreadyExists(fileDTO.getName())) {
+            throw new StorageFileNotFoundException("File with provided name not found.");
+        }
+    }
+
 
     private String getFileExtension(String filename) {
         String[] parts = filename.split("\\.");
