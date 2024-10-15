@@ -26,7 +26,7 @@ public class File {
     private User user;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "file_type", nullable = false)
+    @Column(nullable = false)
     private FileType fileType;
 
     @Column(nullable = false)
