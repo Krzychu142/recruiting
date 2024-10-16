@@ -1,5 +1,8 @@
 package com.krzysiek.recruiting.service;
 
+import com.krzysiek.recruiting.dto.JobDescriptionDTO;
+import com.krzysiek.recruiting.model.JobDescription;
+
 public interface IJobDescriptionService {
-    void createJobDescription();
+    JobDescription createJobDescription(JobDescriptionDTO jobDescriptionDTO);
 }
