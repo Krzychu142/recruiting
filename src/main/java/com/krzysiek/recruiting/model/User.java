@@ -21,11 +21,11 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column
+    @Column(nullable = false)
     private String password;
 
-    @Column(name = "is_confirmed")
-    private Boolean isConfirmed;
+    @Column(name = "is_confirmed", nullable = false)
+    private Boolean isConfirmed  = false;
 
     @Column(name = "confirmation_token")
     private String confirmationToken;
@@ -33,7 +33,7 @@ public class User {
     @Column(name = "reset_password_token")
     private String resetPasswordToken;
 
-    @Column(name = "role")
+    @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER;
 

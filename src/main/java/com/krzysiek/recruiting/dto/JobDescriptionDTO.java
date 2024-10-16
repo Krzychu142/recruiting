@@ -1,7 +1,7 @@
 package com.krzysiek.recruiting.dto;
 
-import com.krzysiek.recruiting.enums.TypeOfContract;
-import com.krzysiek.recruiting.enums.WorkMode;
+import com.krzysiek.recruiting.enums.ContractType;
+import com.krzysiek.recruiting.enums.WorkLocation;
 
 import java.math.BigDecimal;
 
@@ -10,8 +10,8 @@ public record JobDescriptionDTO(
         String positionName,
         BigDecimal minSalary,
         BigDecimal maxSalary,
-        TypeOfContract[] possibleTypeOfContract,
-        WorkMode[] possibleWorkMode,
+        ContractType[] possibleContractType,
+        WorkLocation[] possibleWorkLocation,
         String requirements,
         String officeAddress
 ){}
