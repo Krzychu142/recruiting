@@ -20,4 +20,9 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
     public void getSingleRecruitmentProcess(Long recruitmentProcessId) {
 
     }
+
+    @Override
+    public void editRecruitmentProcess(Long recruitmentProcessId) {
+
+    }
 }
