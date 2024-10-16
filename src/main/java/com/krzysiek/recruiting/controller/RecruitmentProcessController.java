@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/recruitment")
 public class RecruitmentProcessController {
 
-    private final RecruitmentProcessServiceImplementation recruitmentProcessServiceImplementation;
+    private final RecruitmentProcessServiceImplementation recruitmentProcessService;
 
     public RecruitmentProcessController(RecruitmentProcessServiceImplementation recruitmentProcessServiceImplementation) {
-        this.recruitmentProcessServiceImplementation = recruitmentProcessServiceImplementation;
+        this.recruitmentProcessService = recruitmentProcessServiceImplementation;
     }
 
     @PostMapping
