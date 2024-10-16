@@ -1,5 +1,9 @@
 package com.krzysiek.recruiting;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import com.krzysiek.recruiting.model.JobDescription;
 import com.krzysiek.recruiting.repository.JobDescriptionRepository;
 import com.krzysiek.recruiting.service.JobDescriptionServiceServiceImplementation;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,8 +28,18 @@ public class JobDescriptionServiceTests {
     @Test
     void givenValidJobDescription_whenCreateJobDescription_thenSaveInRepository(){
         //Given
+        JobDescription jobDescription = new JobDescription();
+        jobDescription.setId(1L);
+        jobDescription.setJobName("test");
+
         //When
-        //Then
+        when(jobDescriptionRepository.save(jobDescription)).thenReturn(jobDescription);
+        Long createdJobId = jobDescriptionService.createJobDescription(jobDescription);
+
+        // Then
+        assertNotNull(createdJobId);
+        assertEquals(1L, createdJobId);
+        verify(jobDescriptionRepository, times(1)).save(jobDescription);
     }
 
     @Test
