@@ -4,6 +4,7 @@ import com.krzysiek.recruiting.dto.CreateRecruitmentProcessRequestDTO;
 import com.krzysiek.recruiting.enums.FileType;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import com.krzysiek.recruiting.mapper.RecruitmentProcessMapper;
+import com.krzysiek.recruiting.model.JobDescription;
 import com.krzysiek.recruiting.repository.RecruitmentProcessRepository;
 import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,7 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
 
     private final RecruitmentProcessRepository recruitmentProcessRepository;
     private final ThrowCorrectException throwCorrectException;
-    private final JobDescriptionServiceServiceImplementation jobDescriptionServiceServiceImplementation;
+    private final JobDescriptionServiceServiceImplementation jobDescriptionServiceService;
     private final RecruitmentProcessMapper recruitmentProcessMapper;
     private final FileService fileService;
 
@@ -25,7 +26,7 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
     ) {
         this.recruitmentProcessRepository = repository;
         this.throwCorrectException = throwCorrectException;
-        this.jobDescriptionServiceServiceImplementation = jobDescriptionServiceServiceImplementation;
+        this.jobDescriptionServiceService = jobDescriptionServiceServiceImplementation;
         this.recruitmentProcessMapper = recruitmentProcessMapper;
         this.fileService = fileService;
     }
@@ -34,6 +35,7 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
     public void createRecruitmentProcess(CreateRecruitmentProcessRequestDTO createRecruitmentProcessRequestDTO) {
         try {
             validateCreateRecruitmentProcessDTO(createRecruitmentProcessRequestDTO);
+            JobDescription jobDescription = jobDescriptionServiceService.createJobDescription(createRecruitmentProcessRequestDTO.jobDescriptionDTO());
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
         }
@@ -55,7 +57,7 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
     }
 
     private void validateCreateRecruitmentProcessDTO(CreateRecruitmentProcessRequestDTO dto) {
-        jobDescriptionServiceServiceImplementation.validateJobDescriptionDTO(dto.jobDescriptionDTO());
+//        jobDescriptionServiceServiceImplementation.validateJobDescriptionDTO(dto.jobDescriptionDTO());
         if (!dto.hasRecruitmentTask() && dto.recruitmentTaskId() != null) {
             throw new ValidationException("You can't attach a recruitment task if process is marked as with no recruitment task.");
         }
