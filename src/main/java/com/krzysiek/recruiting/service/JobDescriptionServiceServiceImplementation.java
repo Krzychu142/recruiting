@@ -1,11 +1,15 @@
 package com.krzysiek.recruiting.service;
 
 import com.krzysiek.recruiting.dto.JobDescriptionDTO;
+import com.krzysiek.recruiting.enums.WorkLocation;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import com.krzysiek.recruiting.mapper.JobDescriptionMapper;
 import com.krzysiek.recruiting.model.JobDescription;
 import com.krzysiek.recruiting.repository.JobDescriptionRepository;
+import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Service;
+
+import java.util.EnumSet;
 
 @Service
 public class JobDescriptionServiceServiceImplementation implements IJobDescriptionService {
@@ -28,5 +32,13 @@ public class JobDescriptionServiceServiceImplementation implements IJobDescripti
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
         }
+    }
+
+    public void validateJobDescriptionDTO(JobDescriptionDTO jobDescriptionDTO) {
+        if (EnumSet.of(WorkLocation.HYBRID, WorkLocation.ON_SITE).contains(jobDescriptionDTO.workLocation())
+                && jobDescriptionDTO.companyAddress() == null) {
+            throw new ValidationException("Company address is required for " + WorkLocation.HYBRID + " or " + WorkLocation.ON_SITE + ".");
+        }
+        System.out.println(jobDescriptionDTO);
     }
 }
