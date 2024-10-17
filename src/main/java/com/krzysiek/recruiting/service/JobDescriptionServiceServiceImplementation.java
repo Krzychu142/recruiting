@@ -39,6 +39,8 @@ public class JobDescriptionServiceServiceImplementation implements IJobDescripti
                 && jobDescriptionDTO.companyAddress() == null) {
             throw new ValidationException("Company address is required for " + WorkLocation.HYBRID + " or " + WorkLocation.ON_SITE + ".");
         }
-        System.out.println(jobDescriptionDTO);
+        if ((jobDescriptionDTO.minRate() != null  && jobDescriptionDTO.maxRate() != null) && jobDescriptionDTO.minRate().compareTo(jobDescriptionDTO.maxRate()) > 0) {
+            throw new ValidationException("Min rate must be less than or equal to max rate.");
+        }
     }
 }
