@@ -1,5 +1,6 @@
 package com.krzysiek.recruiting.model;
 
+import com.krzysiek.recruiting.enums.ContractType;
 import com.krzysiek.recruiting.enums.WorkLocation;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -21,7 +22,7 @@ public class JobDescription {
     private String companyName;
 
     @Column(nullable = false)
-    private String jobName;
+    private String jobTitle;
 
     @Column
     private String companyAddress;
@@ -31,7 +32,7 @@ public class JobDescription {
     private WorkLocation workLocation;
 
     @Column
-    private String contractType;
+    private ContractType contractType;
 
     @Column(columnDefinition = "TEXT")
     private String requirements;

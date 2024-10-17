@@ -1,6 +1,12 @@
 package com.krzysiek.recruiting.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
+import com.krzysiek.recruiting.dto.CreateRecruitmentProcessRequestDTO;
+import com.krzysiek.recruiting.service.RecruitmentProcessServiceImplementation;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -8,8 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/recruitment")
 public class RecruitmentProcessController {
 
-    @GetMapping()
-    public String getAllRecruitment(){
-        return "Test";
+    private final RecruitmentProcessServiceImplementation recruitmentProcessService;
+
+    public RecruitmentProcessController(RecruitmentProcessServiceImplementation recruitmentProcessServiceImplementation) {
+        this.recruitmentProcessService = recruitmentProcessServiceImplementation;
     }
+
+    @PostMapping
+    public ResponseEntity<?> createRecruitmentProcess(@Valid @RequestBody CreateRecruitmentProcessRequestDTO recruitmentProcessRequestDTO) {
+        recruitmentProcessService.createRecruitmentProcess(recruitmentProcessRequestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
 }
