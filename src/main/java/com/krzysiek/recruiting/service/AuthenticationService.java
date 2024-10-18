@@ -248,4 +248,8 @@ public class AuthenticationService {
             throw new RuntimeException(ex);
         }
     }
+
+    public Long getLoggedInUserId() {
+        return getUserDTOFromSecurityContext().id();
+    }
 }

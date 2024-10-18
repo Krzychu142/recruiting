@@ -80,7 +80,7 @@ public class FileService implements StorageService {
                 throw new StorageException("Bad file extension: " + extension + ". All allowed extensions are: " + storageProperties.getAllowedExtensions());
             }
 
-            Long ownerId = getCurrentUserId();
+            Long ownerId = authenticationService.getLoggedInUserId();
             String uniqueFileName = createUniqueFileName(fileName, ownerId);
             if (isFileAlreadyExists(uniqueFileName)) {
                 throw new StorageException("File already exists");
@@ -107,7 +107,7 @@ public class FileService implements StorageService {
     public List<FileDTO> loadAll(int pageNumber) {
         try {
             Pageable pageable = PageRequest.of(pageNumber, 5);
-            Page<File> userFilesPage = fileRepository.findByUserId(getCurrentUserId(), pageable);
+            Page<File> userFilesPage = fileRepository.findByUserId(authenticationService.getLoggedInUserId(), pageable);
 
             return userFilesPage.getContent().stream()
                     .map(fileMapper::toDTO)
@@ -140,7 +140,6 @@ public class FileService implements StorageService {
         }
     }
 
-
     @Transactional(rollbackOn = Exception.class)
     @Override
     public void delete(Long fileId, FileType fileType) {
@@ -156,13 +155,19 @@ public class FileService implements StorageService {
         }
     }
 
+    public void checkIsFileExistsInDatabaseByIdTypeUserId(Long fileId, FileType fileType) {
+        Long loggedInUserId = authenticationService.getLoggedInUserId();
+        fileRepository.findByIdAndFileTypeAndUserId(fileId, fileType, loggedInUserId)
+                .orElseThrow(() -> new StorageFileNotFoundException("File with id: " + fileId + "type: " + fileType + "owned by user with id: " + loggedInUserId + " not found"));
+    }
+
     private FileDTO getFileDTOById(Long fileId) {
         return fileMapper.toDTO(fileRepository.findById(fileId)
                 .orElseThrow(() -> new StorageFileNotFoundException("File with provided id not found.")));
     }
 
     private void validateUserAccessAndFileExistence(FileDTO fileDTO) {
-        if (!Objects.equals(fileDTO.getUserId(), getCurrentUserId())) {
+        if (!Objects.equals(fileDTO.getUserId(), authenticationService.getLoggedInUserId())) {
             throw new AccessDeniedException("Access denied - You are not owner of this file.");
         }
 
@@ -170,7 +175,6 @@ public class FileService implements StorageService {
             throw new StorageFileNotFoundException("File with provided name not found.");
         }
     }
-
 
     private String getFileExtension(String filename) {
         String[] parts = filename.split("\\.");
@@ -194,10 +198,6 @@ public class FileService implements StorageService {
     private Boolean isFileAlreadyExists(String filename) {
         Path filePath = load(filename);
         return Files.exists(filePath);
-    }
-
-    private Long getCurrentUserId(){
-        return authenticationService.getUserDTOFromSecurityContext().id();
     }
 
 }

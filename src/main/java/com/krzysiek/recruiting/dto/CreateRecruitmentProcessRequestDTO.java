@@ -10,7 +10,7 @@ public record CreateRecruitmentProcessRequestDTO(
         @Valid
         JobDescriptionDTO jobDescriptionDTO,
         Long cvId,
-        Long recruitmentTask,
+        Long recruitmentTaskId,
         LocalDate dateOfApplication,
         LocalDate processEndDate,
         Boolean hasRecruitmentTask,
