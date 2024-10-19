@@ -1,14 +1,18 @@
 package com.krzysiek.recruiting.repository;
 
 import com.krzysiek.recruiting.model.User;
+import io.micrometer.common.lang.NonNullApi;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+@NonNullApi
+@Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
     @Modifying
@@ -27,5 +31,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     int updatePassword(@Param("id") Long id, @Param("password") String password);
 
     Optional<User> findByEmail(String email);
+    Optional<User> findById(Long id);
 
 }

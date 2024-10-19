@@ -9,7 +9,7 @@ public record RecruitmentProcessDTO(
         Long userId,
         Long jobDescriptionId,
         Long cvId,
-        Long recruitmentTask,
+        Long recruitmentTaskId,
         LocalDate dateOfApplication,
         LocalDate processEndDate,
         Boolean hasRecruitmentTask,

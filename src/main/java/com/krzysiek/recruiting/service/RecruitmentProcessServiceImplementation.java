@@ -53,6 +53,8 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
                     createRecruitmentProcessRequestDTO.status()
             );
             System.out.println(recruitmentProcessDTO);
+            // map into entity
+
 
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
