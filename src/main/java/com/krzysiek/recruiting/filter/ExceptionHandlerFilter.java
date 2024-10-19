@@ -3,10 +3,10 @@ package com.krzysiek.recruiting.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.krzysiek.recruiting.dto.ErrorResponseDTO;
 import com.krzysiek.recruiting.exception.GlobalFilterExceptionHandler;
+import com.krzysiek.recruiting.exception.RateLimitingException;
 import io.jsonwebtoken.JwtException;
 import io.micrometer.common.lang.NonNullApi;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -33,6 +33,8 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (JwtException ex) {
             handleException(response, ex, HttpStatus.UNAUTHORIZED, request);
+        } catch (RateLimitingException ex){
+            handleException(response, ex, HttpStatus.TOO_MANY_REQUESTS, request);
         } catch (Exception ex) {
             handleException(response, ex, HttpStatus.INTERNAL_SERVER_ERROR, request);
         }

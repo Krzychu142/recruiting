@@ -122,6 +122,11 @@
 			<artifactId>bucket4j-spring-boot-starter</artifactId>
 			<version>0.5.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.ben-manes.caffeine</groupId>
+			<artifactId>caffeine</artifactId>
+			<version>3.1.6</version>
+		</dependency>
 	</dependencies>
 
 	<build>

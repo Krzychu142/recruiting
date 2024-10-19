@@ -2,6 +2,7 @@ package com.krzysiek.recruiting.config;
 
 import com.krzysiek.recruiting.filter.ExceptionHandlerFilter;
 import com.krzysiek.recruiting.filter.JwtAuthFilter;
+import com.krzysiek.recruiting.filter.RateLimitingFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,10 +22,12 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final ExceptionHandlerFilter exceptionHandlingFilter;
+    private final RateLimitingFilter rateLimitingFilter;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter, ExceptionHandlerFilter exceptionHandlingFilter) {
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter, ExceptionHandlerFilter exceptionHandlingFilter, RateLimitingFilter rateLimitFilter) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.exceptionHandlingFilter = exceptionHandlingFilter;
+        this.rateLimitingFilter = rateLimitFilter;
     }
 
     @Bean
@@ -42,7 +45,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(exceptionHandlingFilter, JwtAuthFilter.class);
+                .addFilterBefore(exceptionHandlingFilter, JwtAuthFilter.class)
+                .addFilterAfter(rateLimitingFilter, JwtAuthFilter.class);
 
         return http.build();
     }
