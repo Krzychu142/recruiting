@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import com.krzysiek.recruiting.dto.JobDescriptionDTO;
 import com.krzysiek.recruiting.enums.ContractType;
 import com.krzysiek.recruiting.enums.WorkLocation;
+import com.krzysiek.recruiting.exception.JobDescriptionNotFoundException;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import com.krzysiek.recruiting.mapper.JobDescriptionMapper;
 import com.krzysiek.recruiting.model.JobDescription;
@@ -19,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 public class JobDescriptionServiceTests {
 
@@ -132,6 +134,63 @@ public class JobDescriptionServiceTests {
         verify(throwCorrectException, times(1)).handleException(mapperException);
         verify(jobDescriptionRepository, never()).save(any(JobDescription.class));
     }
+
+    @Test
+    void getJobDescriptionById_Success() {
+        // Arrange
+        Long id = 1L;
+        JobDescription jobDescription = new JobDescription();
+        jobDescription.setId(id);
+        jobDescription.setCompanyName("Company XYZ");
+        jobDescription.setJobTitle("Software Engineer");
+        jobDescription.setCompanyAddress("123 Main St");
+        jobDescription.setWorkLocation(WorkLocation.REMOTE);
+        jobDescription.setContractType(ContractType.B2B_CONTRACT);
+        jobDescription.setRequirements("Develop and maintain software applications.");
+        jobDescription.setMinRate(new BigDecimal("100.00"));
+        jobDescription.setMaxRate(new BigDecimal("200.00"));
+
+        when(jobDescriptionRepository.findById(id)).thenReturn(Optional.of(jobDescription));
+
+        // Act
+        JobDescription result = jobDescriptionService.getJobDescriptionById(id);
+
+        // Assert
+        assertNotNull(result, "Result should not be null");
+        assertEquals(id, result.getId(), "ID should match");
+        assertEquals("Company XYZ", result.getCompanyName(), "Company name should match");
+        assertEquals("Software Engineer", result.getJobTitle(), "Job title should match");
+        assertEquals("123 Main St", result.getCompanyAddress(), "Company address should match");
+        assertEquals(WorkLocation.REMOTE, result.getWorkLocation(), "Work location should match");
+        assertEquals(ContractType.B2B_CONTRACT, result.getContractType(), "Contract type should match");
+        assertEquals("Develop and maintain software applications.", result.getRequirements(), "Requirements should match");
+        assertEquals(new BigDecimal("100.00"), result.getMinRate(), "MinRate should match");
+        assertEquals(new BigDecimal("200.00"), result.getMaxRate(), "MaxRate should match");
+
+        verify(jobDescriptionRepository, times(1)).findById(id);
+        verify(throwCorrectException, never()).handleException(any(Exception.class));
+    }
+
+    @Test
+    void getJobDescriptionById_NotFound() {
+        // Arrange
+        Long id = 1L;
+
+        when(jobDescriptionRepository.findById(id)).thenReturn(Optional.empty());
+        when(throwCorrectException.handleException(any(JobDescriptionNotFoundException.class)))
+                .thenThrow(new RuntimeException("Handled exception"));
+
+        // Act & Assert
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
+            jobDescriptionService.getJobDescriptionById(id);
+        }, "Expected getJobDescriptionById to throw, but it didn't");
+
+        assertEquals("Handled exception", thrown.getMessage(), "Exception message should match");
+
+        verify(jobDescriptionRepository, times(1)).findById(id);
+        verify(throwCorrectException, times(1)).handleException(any(JobDescriptionNotFoundException.class));
+    }
+
 
     private static JobDescription getJobDescription(JobDescriptionDTO dto) {
         JobDescription savedEntity = new JobDescription();

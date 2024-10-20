@@ -2,6 +2,7 @@ package com.krzysiek.recruiting.service;
 
 import com.krzysiek.recruiting.dto.JobDescriptionDTO;
 import com.krzysiek.recruiting.enums.WorkLocation;
+import com.krzysiek.recruiting.exception.JobDescriptionNotFoundException;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import com.krzysiek.recruiting.mapper.JobDescriptionMapper;
 import com.krzysiek.recruiting.model.JobDescription;
@@ -30,6 +31,15 @@ public class JobDescriptionServiceServiceImplementation implements IJobDescripti
             validateJobDescriptionDTO(jobDescriptionDTO);
             JobDescription jobDescription = jobDescriptionMapper.toEntity(jobDescriptionDTO);
             return jobDescriptionRepository.save(jobDescription);
+        } catch (Exception ex) {
+            throw throwCorrectException.handleException(ex);
+        }
+    }
+
+    @Override
+    public JobDescription getJobDescriptionById(Long id) {
+        try {
+            return jobDescriptionRepository.findById(id).orElseThrow(() -> new JobDescriptionNotFoundException("Not found job description with id: " + id));
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
         }
