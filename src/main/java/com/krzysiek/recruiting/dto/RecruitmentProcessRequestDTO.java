@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
-public record CreateRecruitmentProcessRequestDTO(
+public record RecruitmentProcessRequestDTO(
         @Valid
         @NotNull
         JobDescriptionDTO jobDescriptionDTO,

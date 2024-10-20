@@ -11,36 +11,37 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Entity
-@Table(name = "job_descriptions")
+@Table(name = "job_descriptions",
+uniqueConstraints = @UniqueConstraint(columnNames = {"company_name", "job_title", "requirements"}))
 public class JobDescription {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "company_name", nullable = false)
     private String companyName;
 
-    @Column(nullable = false)
+    @Column(name = "job_title", nullable = false)
     private String jobTitle;
 
-    @Column
+    @Column(name = "company_address")
     private String companyAddress;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "work_location", nullable = false)
     private WorkLocation workLocation;
 
-    @Column
+    @Column(name = "contract_type")
     private ContractType contractType;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "requirements", columnDefinition = "TEXT")
     private String requirements;
 
-    @Column(precision = 10, scale = 2)
+    @Column(name = "min_rate", precision = 10, scale = 2)
     private BigDecimal minRate;
 
-    @Column(precision = 10, scale = 2)
+    @Column(name = "max_rate", precision = 10, scale = 2)
     private BigDecimal maxRate;
 
     @OneToOne(mappedBy = "jobDescription")

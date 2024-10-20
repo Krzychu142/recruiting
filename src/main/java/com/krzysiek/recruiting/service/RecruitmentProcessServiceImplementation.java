@@ -1,7 +1,7 @@
 package com.krzysiek.recruiting.service;
 
 import com.krzysiek.recruiting.dto.BaseResponseDTO;
-import com.krzysiek.recruiting.dto.CreateRecruitmentProcessRequestDTO;
+import com.krzysiek.recruiting.dto.RecruitmentProcessRequestDTO;
 import com.krzysiek.recruiting.dto.RecruitmentProcessDTO;
 import com.krzysiek.recruiting.enums.FileType;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
@@ -11,7 +11,13 @@ import com.krzysiek.recruiting.model.RecruitmentProcess;
 import com.krzysiek.recruiting.repository.RecruitmentProcessRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RecruitmentProcessServiceImplementation implements IRecruitmentProcessService{
@@ -39,22 +45,22 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
 
     @Transactional
     @Override
-    public BaseResponseDTO createRecruitmentProcess(CreateRecruitmentProcessRequestDTO createRecruitmentProcessRequestDTO) {
+    public BaseResponseDTO createRecruitmentProcess(RecruitmentProcessRequestDTO recruitmentProcessRequestDTO) {
         try {
-            validateCreateRecruitmentProcessDTO(createRecruitmentProcessRequestDTO);
-            JobDescription jobDescription = jobDescriptionServiceService.createJobDescription(createRecruitmentProcessRequestDTO.jobDescriptionDTO());
+            validateCreateRecruitmentProcessDTO(recruitmentProcessRequestDTO);
+            JobDescription jobDescription = jobDescriptionServiceService.createJobDescription(recruitmentProcessRequestDTO.jobDescriptionDTO());
             RecruitmentProcessDTO recruitmentProcessDTO = new RecruitmentProcessDTO(
                     null,
                     authenticationService.getLoggedInUserId(),
                     jobDescription.getId(),
-                    createRecruitmentProcessRequestDTO.cvId(),
-                    createRecruitmentProcessRequestDTO.recruitmentTaskId(),
-                    createRecruitmentProcessRequestDTO.dateOfApplication(),
-                    createRecruitmentProcessRequestDTO.processEndDate(),
-                    createRecruitmentProcessRequestDTO.hasRecruitmentTask(),
-                    createRecruitmentProcessRequestDTO.recruitmentTaskStatus(),
-                    createRecruitmentProcessRequestDTO.taskDeadline(),
-                    createRecruitmentProcessRequestDTO.status()
+                    recruitmentProcessRequestDTO.cvId(),
+                    recruitmentProcessRequestDTO.recruitmentTaskId(),
+                    recruitmentProcessRequestDTO.dateOfApplication(),
+                    recruitmentProcessRequestDTO.processEndDate(),
+                    recruitmentProcessRequestDTO.hasRecruitmentTask(),
+                    recruitmentProcessRequestDTO.recruitmentTaskStatus(),
+                    recruitmentProcessRequestDTO.taskDeadline(),
+                    recruitmentProcessRequestDTO.status()
             );
             RecruitmentProcess recruitmentProcess = recruitmentProcessMapper.toEntity(recruitmentProcessDTO);
             recruitmentProcessRepository.save(recruitmentProcess);
@@ -65,8 +71,16 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
     }
 
     @Override
-    public void getAllRecruitmentProcess(int pageNumber) {
-
+    public List<RecruitmentProcessRequestDTO> getAllRecruitmentProcesses(int pageNumber) {
+        try {
+            Pageable pageable = PageRequest.of(pageNumber, 5);
+            Page<RecruitmentProcess> usersAllRecruitmentProcess = recruitmentProcessRepository.findAllByUserId(authenticationService.getLoggedInUserId(), pageable);
+            return usersAllRecruitmentProcess.stream()
+                    .map(recruitmentProcessMapper::toRecruitmentProcessDTO)
+                    .collect(Collectors.toList());
+        } catch (Exception ex) {
+            throw throwCorrectException.handleException(ex);
+        }
     }
 
     @Override
@@ -79,7 +93,7 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
 
     }
 
-    private void validateCreateRecruitmentProcessDTO(CreateRecruitmentProcessRequestDTO dto) {
+    private void validateCreateRecruitmentProcessDTO(RecruitmentProcessRequestDTO dto) {
         if (!dto.hasRecruitmentTask() && dto.recruitmentTaskId() != null) {
             throw new ValidationException("You can't attach a recruitment task if process is marked as with no recruitment task.");
         }

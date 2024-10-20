@@ -11,7 +11,9 @@
     @Setter
     @Getter
     @Entity
-    @Table(name = "recruitment_processes")
+    @Table(name = "recruitment_processes",
+            uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "job_description_id", "cv_id", "date_of_application"})
+    )
     public class RecruitmentProcess {
 
         @Id
@@ -22,7 +24,7 @@
         @JoinColumn(name = "user_id", nullable = false)
         private User user;
 
-        @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+        @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
         @JoinColumn(name = "job_description_id", referencedColumnName = "id", unique = true, nullable = false)
         private JobDescription jobDescription;
 
@@ -34,23 +36,23 @@
         @JoinColumn(name = "recruitment_task_id", referencedColumnName = "id")
         private File recruitmentTask;
 
-        @Column(nullable = false)
+        @Column(name = "date_of_application", nullable = false)
         private LocalDate dateOfApplication = LocalDate.now();
 
-        @Column
+        @Column(name = "process_end_date")
         private LocalDate processEndDate;
 
-        @Column(nullable = false)
+        @Column(name = "has_recruitment_task", nullable = false)
         private Boolean hasRecruitmentTask = false;
 
         @Enumerated(EnumType.STRING)
-        @Column
+        @Column(name = "recruitment_task_status")
         private RecruitmentTaskStatus recruitmentTaskStatus = RecruitmentTaskStatus.PENDING;
 
-        @Column
+        @Column(name = "task_deadline")
         private LocalDate taskDeadline;
 
-        @Column
+        @Column(name = "evaluation_deadline")
         private LocalDate evaluationDeadline;
 
         @Enumerated(EnumType.STRING)
