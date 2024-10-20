@@ -155,6 +155,14 @@ public class FileService implements StorageService {
         }
     }
 
+    public File getFileById(Long id) {
+        try {
+            return fileRepository.findById(id).orElseThrow(() -> new StorageFileNotFoundException("File with id " + id + " not found"));
+        } catch (Exception ex) {
+            throw throwCorrectException.handleException(ex);
+        }
+    }
+
     public void checkIsFileExistsInDatabaseByIdTypeUserId(Long fileId, FileType fileType) {
         Long loggedInUserId = authenticationService.getLoggedInUserId();
         fileRepository.findByIdAndFileTypeAndUserId(fileId, fileType, loggedInUserId)

@@ -5,4 +5,5 @@ import com.krzysiek.recruiting.model.JobDescription;
 
 public interface IJobDescriptionService {
     JobDescription createJobDescription(JobDescriptionDTO jobDescriptionDTO);
+    JobDescription getJobDescriptionById(Long id);
 }

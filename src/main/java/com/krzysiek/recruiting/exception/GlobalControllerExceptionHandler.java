@@ -75,6 +75,16 @@ public class GlobalControllerExceptionHandler extends BaseExceptionHandler{
         return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.UNAUTHORIZED));
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponseDTO> handleIllegalArgumentException(IllegalArgumentException ex, HttpServletRequest servletRequest){
+        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(JobDescriptionNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleNotFoundException(JobDescriptionNotFoundException ex, HttpServletRequest servletRequest){
+        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.NOT_FOUND));
+    }
+
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ErrorResponseDTO> handleMaxSizeExceededException(MaxUploadSizeExceededException ex, HttpServletRequest servletRequest){
         return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.PAYLOAD_TOO_LARGE ));
