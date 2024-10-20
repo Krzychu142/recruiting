@@ -166,7 +166,7 @@ public class FileService implements StorageService {
     public void checkIsFileExistsInDatabaseByIdTypeUserId(Long fileId, FileType fileType) {
         Long loggedInUserId = authenticationService.getLoggedInUserId();
         fileRepository.findByIdAndFileTypeAndUserId(fileId, fileType, loggedInUserId)
-                .orElseThrow(() -> new StorageFileNotFoundException("File with id: " + fileId + "type: " + fileType + "owned by user with id: " + loggedInUserId + " not found"));
+                .orElseThrow(() -> new StorageFileNotFoundException("File with id: " + fileId + " type: " + fileType + "owned by user with id: " + loggedInUserId + " not found"));
     }
 
     private FileDTO getFileDTOById(Long fileId) {

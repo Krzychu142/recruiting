@@ -1,5 +1,6 @@
 package com.krzysiek.recruiting.controller;
 
+import com.krzysiek.recruiting.dto.BaseResponseDTO;
 import com.krzysiek.recruiting.dto.CreateRecruitmentProcessRequestDTO;
 import com.krzysiek.recruiting.service.RecruitmentProcessServiceImplementation;
 import jakarta.validation.Valid;
@@ -21,9 +22,8 @@ public class RecruitmentProcessController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createRecruitmentProcess(@Valid @RequestBody CreateRecruitmentProcessRequestDTO recruitmentProcessRequestDTO) {
-        recruitmentProcessService.createRecruitmentProcess(recruitmentProcessRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<BaseResponseDTO> createRecruitmentProcess(@Valid @RequestBody CreateRecruitmentProcessRequestDTO recruitmentProcessRequestDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(recruitmentProcessService.createRecruitmentProcess(recruitmentProcessRequestDTO));
     }
 
 }

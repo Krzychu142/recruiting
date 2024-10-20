@@ -218,7 +218,7 @@ public class AuthenticationService {
     public User getUserByEmail(String email){
         try {
             return userRepository.findByEmail(email)
-                    .orElseThrow(() -> new UserNotFoundException("User with provided email not found."));
+                    .orElseThrow(() -> new UserNotFoundException("Account not found."));
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
         }

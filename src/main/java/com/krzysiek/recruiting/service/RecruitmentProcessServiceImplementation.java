@@ -1,12 +1,15 @@
 package com.krzysiek.recruiting.service;
 
+import com.krzysiek.recruiting.dto.BaseResponseDTO;
 import com.krzysiek.recruiting.dto.CreateRecruitmentProcessRequestDTO;
 import com.krzysiek.recruiting.dto.RecruitmentProcessDTO;
 import com.krzysiek.recruiting.enums.FileType;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import com.krzysiek.recruiting.mapper.RecruitmentProcessMapper;
 import com.krzysiek.recruiting.model.JobDescription;
+import com.krzysiek.recruiting.model.RecruitmentProcess;
 import com.krzysiek.recruiting.repository.RecruitmentProcessRepository;
+import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +37,9 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
         this.authenticationService = authenticationService;
     }
 
+    @Transactional
     @Override
-    public void createRecruitmentProcess(CreateRecruitmentProcessRequestDTO createRecruitmentProcessRequestDTO) {
+    public BaseResponseDTO createRecruitmentProcess(CreateRecruitmentProcessRequestDTO createRecruitmentProcessRequestDTO) {
         try {
             validateCreateRecruitmentProcessDTO(createRecruitmentProcessRequestDTO);
             JobDescription jobDescription = jobDescriptionServiceService.createJobDescription(createRecruitmentProcessRequestDTO.jobDescriptionDTO());
@@ -52,10 +56,9 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
                     createRecruitmentProcessRequestDTO.taskDeadline(),
                     createRecruitmentProcessRequestDTO.status()
             );
-            System.out.println(recruitmentProcessDTO);
-            // map into entity
-
-
+            RecruitmentProcess recruitmentProcess = recruitmentProcessMapper.toEntity(recruitmentProcessDTO);
+            recruitmentProcessRepository.save(recruitmentProcess);
+            return new BaseResponseDTO("Successfully created recruitment process");
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
         }
