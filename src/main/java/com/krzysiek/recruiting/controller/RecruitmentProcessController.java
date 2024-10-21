@@ -1,8 +1,8 @@
 package com.krzysiek.recruiting.controller;
 
-import com.krzysiek.recruiting.dto.AllRecruitmentProcessesResponseDTO;
-import com.krzysiek.recruiting.dto.BaseResponseDTO;
-import com.krzysiek.recruiting.dto.RecruitmentProcessRequestDTO;
+import com.krzysiek.recruiting.dto.responsDTOs.AllRecruitmentProcessesResponseDTO;
+import com.krzysiek.recruiting.dto.responsDTOs.BaseResponseDTO;
+import com.krzysiek.recruiting.dto.requestDTOs.RecruitmentProcessRequestDTO;
 import com.krzysiek.recruiting.service.RecruitmentProcessServiceImplementation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;

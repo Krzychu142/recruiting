@@ -1,4 +1,4 @@
-package com.krzysiek.recruiting.dto;
+package com.krzysiek.recruiting.dto.requestDTOs;
 
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;

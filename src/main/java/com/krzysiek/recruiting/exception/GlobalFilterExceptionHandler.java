@@ -1,6 +1,6 @@
 package com.krzysiek.recruiting.exception;
 
-import com.krzysiek.recruiting.dto.ErrorResponseDTO;
+import com.krzysiek.recruiting.dto.responsDTOs.ErrorResponseDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;

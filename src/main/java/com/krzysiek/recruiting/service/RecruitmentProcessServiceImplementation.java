@@ -1,7 +1,7 @@
 package com.krzysiek.recruiting.service;
 
-import com.krzysiek.recruiting.dto.BaseResponseDTO;
-import com.krzysiek.recruiting.dto.RecruitmentProcessRequestDTO;
+import com.krzysiek.recruiting.dto.responsDTOs.BaseResponseDTO;
+import com.krzysiek.recruiting.dto.requestDTOs.RecruitmentProcessRequestDTO;
 import com.krzysiek.recruiting.dto.RecruitmentProcessDTO;
 import com.krzysiek.recruiting.enums.FileType;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;

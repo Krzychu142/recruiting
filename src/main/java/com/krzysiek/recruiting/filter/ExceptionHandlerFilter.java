@@ -1,9 +1,9 @@
 package com.krzysiek.recruiting.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.krzysiek.recruiting.dto.ErrorResponseDTO;
+import com.krzysiek.recruiting.dto.responsDTOs.ErrorResponseDTO;
 import com.krzysiek.recruiting.exception.GlobalFilterExceptionHandler;
-import com.krzysiek.recruiting.exception.RateLimitingException;
+import com.krzysiek.recruiting.exception.customExceptions.RateLimitingException;
 import io.jsonwebtoken.JwtException;
 import io.micrometer.common.lang.NonNullApi;
 import jakarta.servlet.FilterChain;

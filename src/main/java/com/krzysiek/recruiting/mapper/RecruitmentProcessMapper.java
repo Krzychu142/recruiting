@@ -1,7 +1,7 @@
 package com.krzysiek.recruiting.mapper;
 
 
-import com.krzysiek.recruiting.dto.RecruitmentProcessRequestDTO;
+import com.krzysiek.recruiting.dto.requestDTOs.RecruitmentProcessRequestDTO;
 import com.krzysiek.recruiting.dto.RecruitmentProcessDTO;
 import com.krzysiek.recruiting.model.RecruitmentProcess;
 import com.krzysiek.recruiting.model.User;

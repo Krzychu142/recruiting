@@ -1,8 +1,8 @@
 package com.krzysiek.recruiting.service;
 
 
-import com.krzysiek.recruiting.dto.BaseResponseDTO;
-import com.krzysiek.recruiting.dto.RecruitmentProcessRequestDTO;
+import com.krzysiek.recruiting.dto.responsDTOs.BaseResponseDTO;
+import com.krzysiek.recruiting.dto.requestDTOs.RecruitmentProcessRequestDTO;
 
 import java.util.List;
 

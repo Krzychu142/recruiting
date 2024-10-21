@@ -1,7 +1,7 @@
 package com.krzysiek.recruiting.service;
 
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
-import com.krzysiek.recruiting.exception.UserNotFoundException;
+import com.krzysiek.recruiting.exception.customExceptions.UserNotFoundException;
 import com.krzysiek.recruiting.model.User;
 import com.krzysiek.recruiting.repository.UserRepository;
 import org.springframework.stereotype.Service;

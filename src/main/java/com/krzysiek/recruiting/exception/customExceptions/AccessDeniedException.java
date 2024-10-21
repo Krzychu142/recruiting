@@ -1,4 +1,4 @@
-package com.krzysiek.recruiting.exception;
+package com.krzysiek.recruiting.exception.customExceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

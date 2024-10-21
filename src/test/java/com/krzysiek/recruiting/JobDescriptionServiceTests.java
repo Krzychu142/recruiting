@@ -6,7 +6,7 @@ import static org.mockito.Mockito.*;
 import com.krzysiek.recruiting.dto.JobDescriptionDTO;
 import com.krzysiek.recruiting.enums.ContractType;
 import com.krzysiek.recruiting.enums.WorkLocation;
-import com.krzysiek.recruiting.exception.JobDescriptionNotFoundException;
+import com.krzysiek.recruiting.exception.customExceptions.JobDescriptionNotFoundException;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import com.krzysiek.recruiting.mapper.JobDescriptionMapper;
 import com.krzysiek.recruiting.model.JobDescription;
@@ -124,9 +124,7 @@ public class JobDescriptionServiceTests {
         when(throwCorrectException.handleException(mapperException)).thenThrow(new RuntimeException("Handled exception"));
 
         // Act & Assert
-        RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
-            jobDescriptionService.createJobDescription(dto);
-        });
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> jobDescriptionService.createJobDescription(dto));
 
         assertEquals("Handled exception", thrown.getMessage(), "Exception message should match");
 

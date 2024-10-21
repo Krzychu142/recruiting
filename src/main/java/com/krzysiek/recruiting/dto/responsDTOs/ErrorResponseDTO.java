@@ -1,5 +1,6 @@
-package com.krzysiek.recruiting.dto;
+package com.krzysiek.recruiting.dto.responsDTOs;
 
+import com.krzysiek.recruiting.dto.FieldErrorDTO;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,8 +1,8 @@
 package com.krzysiek.recruiting.controller;
 
-import com.krzysiek.recruiting.dto.BaseResponseDTO;
-import com.krzysiek.recruiting.dto.DeleteFileRequestDTO;
-import com.krzysiek.recruiting.dto.LoadAllFileResponseDTO;
+import com.krzysiek.recruiting.dto.responsDTOs.BaseResponseDTO;
+import com.krzysiek.recruiting.dto.requestDTOs.DeleteFileRequestDTO;
+import com.krzysiek.recruiting.dto.responsDTOs.LoadAllFileResponseDTO;
 import com.krzysiek.recruiting.enums.FileType;
 import com.krzysiek.recruiting.service.FileService;
 import jakarta.validation.Valid;

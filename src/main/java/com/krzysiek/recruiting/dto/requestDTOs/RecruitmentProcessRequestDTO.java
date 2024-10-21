@@ -1,5 +1,6 @@
-package com.krzysiek.recruiting.dto;
+package com.krzysiek.recruiting.dto.requestDTOs;
 
+import com.krzysiek.recruiting.dto.JobDescriptionDTO;
 import com.krzysiek.recruiting.enums.RecruitmentProcessStatus;
 import com.krzysiek.recruiting.enums.RecruitmentTaskStatus;
 import jakarta.validation.Valid;

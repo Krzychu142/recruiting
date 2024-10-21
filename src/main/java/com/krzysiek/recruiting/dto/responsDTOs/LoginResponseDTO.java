@@ -1,4 +1,4 @@
-package com.krzysiek.recruiting.dto;
+package com.krzysiek.recruiting.dto.responsDTOs;
 
 import lombok.Getter;
 

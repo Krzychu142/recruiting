@@ -1,5 +1,6 @@
 package com.krzysiek.recruiting.exception;
 
+import com.krzysiek.recruiting.exception.customExceptions.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.validation.ValidationException;
@@ -17,6 +18,8 @@ public class ThrowCorrectException {
             throw new ValidationException(ex.getMessage(), ex);
         } else if (ex instanceof UserNotFoundException) {
             throw new UserNotFoundException(ex.getMessage());
+        } else if (ex instanceof JobDescriptionAlreadyExistsException) {
+            throw new JobDescriptionAlreadyExistsException(ex.getMessage());
         } else if (ex instanceof JpaSystemException) {
             throw new RuntimeException("JPA system error: " + ex.getMessage(), ex);
         } else if (ex instanceof SignatureException){
