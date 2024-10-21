@@ -7,7 +7,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface JobDescriptionMapper {
-
     @Mapping(target = "id", ignore = true)
     JobDescription toEntity(JobDescriptionDTO jobDescriptionDTO);
 }

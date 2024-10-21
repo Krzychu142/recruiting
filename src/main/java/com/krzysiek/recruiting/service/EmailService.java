@@ -64,7 +64,7 @@ public class EmailService {
     }
 
     @Async
-    private void sendEmail(EmailDTO emailDTO) {
+    protected void sendEmail(EmailDTO emailDTO) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(errorNotificationEmail);
