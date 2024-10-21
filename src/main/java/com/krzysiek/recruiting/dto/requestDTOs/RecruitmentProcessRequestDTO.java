@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public record RecruitmentProcessRequestDTO(
+        Long id,
         @Valid
         @NotNull
         JobDescriptionDTO jobDescriptionDTO,

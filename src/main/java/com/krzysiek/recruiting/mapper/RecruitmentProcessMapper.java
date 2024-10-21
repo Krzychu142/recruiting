@@ -33,6 +33,7 @@ public abstract class RecruitmentProcessMapper {
     @Mapping(source = "recruitmentTaskId", target = "recruitmentTask", qualifiedByName = "mapRecruitmentTask")
     public abstract RecruitmentProcess toEntity(RecruitmentProcessDTO processDTO);
 
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "jobDescription", target = "jobDescriptionDTO")
     @Mapping(source = "cv.id", target = "cvId")
     @Mapping(source = "recruitmentTask.id", target = "recruitmentTaskId")
