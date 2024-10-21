@@ -142,6 +142,11 @@ public class GlobalControllerExceptionHandler extends BaseExceptionHandler{
         return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.CONFLICT));
     }
 
+    @ExceptionHandler(RecruitmentProcessNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleRecruitmentProcessNotFoundException(RecruitmentProcessNotFoundException ex, HttpServletRequest servletRequest) {
+        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.NOT_FOUND));
+    }
+
     @ExceptionHandler(Exception.class)
     // request for more information about exception
     public ResponseEntity<ErrorResponseDTO> handleGlobalException(Exception ex, WebRequest request, HttpServletRequest servletRequest) {

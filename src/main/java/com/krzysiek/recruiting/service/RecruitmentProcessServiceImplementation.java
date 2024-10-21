@@ -5,6 +5,7 @@ import com.krzysiek.recruiting.dto.requestDTOs.RecruitmentProcessRequestDTO;
 import com.krzysiek.recruiting.dto.RecruitmentProcessDTO;
 import com.krzysiek.recruiting.enums.FileType;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
+import com.krzysiek.recruiting.exception.customExceptions.RecruitmentProcessNotFoundException;
 import com.krzysiek.recruiting.mapper.RecruitmentProcessMapper;
 import com.krzysiek.recruiting.model.JobDescription;
 import com.krzysiek.recruiting.model.RecruitmentProcess;
@@ -91,13 +92,31 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
     }
 
     @Override
-    public void getSingleRecruitmentProcess(Long recruitmentProcessId) {
-
+    public void editRecruitmentProcess(Long recruitmentProcessId) {
+        try {
+            // it should take old Long RecruitmentProcessId and EditableRecruitmentProcessRequestDTO
+            // try to find old (if not found throw an exception)
+            // validate EditableRecruitmentProcessRequestDTO
+            // change editable find in model by Properties passed by EditableRecruitmentProcessRequestDTO
+            // update model in database
+            return;
+        } catch (Exception ex) {
+            throw throwCorrectException.handleException(ex);
+        }
     }
 
     @Override
-    public void editRecruitmentProcess(Long recruitmentProcessId) {
+    public void deleteRecruitmentProcess(Long recruitmentProcessId) {
 
+    }
+
+    private RecruitmentProcess getSingleRecruitmentProcess(Long recruitmentProcessId) {
+        try {
+            return recruitmentProcessRepository.findById(recruitmentProcessId)
+                    .orElseThrow(() -> new RecruitmentProcessNotFoundException("Recruitment process with id: " + recruitmentProcessId + " not found"));
+        } catch (Exception ex) {
+            throw throwCorrectException.handleException(ex);
+        }
     }
 
     private void validateCreateRecruitmentProcessDTO(RecruitmentProcessRequestDTO dto) {
