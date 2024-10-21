@@ -26,10 +26,14 @@ public class RecruitmentProcessController {
     }
 
     @GetMapping
-    public ResponseEntity<AllRecruitmentProcessesResponseDTO> getAllRecruitmentProcesses(@RequestParam(name = "page-number", defaultValue = "0") @Min(0) int pageNumber) {
+    public ResponseEntity<AllRecruitmentProcessesResponseDTO> getAllRecruitmentProcesses(
+            @RequestParam(name = "page-number", defaultValue = "0") @Min(0) int pageNumber,
+            @RequestParam(name = "sort-by", defaultValue = "dateOfApplication") String sortBy,
+            @RequestParam(name = "sort-direction", defaultValue = "ASC") String sortDirection
+    ) {
         return ResponseEntity.status(HttpStatus.OK).body(
                 new AllRecruitmentProcessesResponseDTO("All user's recruitment process list. Page: " + pageNumber + ".",
-                        recruitmentProcessService.getAllRecruitmentProcesses(pageNumber))
+                        recruitmentProcessService.getAllRecruitmentProcesses(pageNumber, sortBy, sortDirection))
         );
     }
 }

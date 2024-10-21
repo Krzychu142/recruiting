@@ -9,7 +9,7 @@ import java.util.List;
 public interface IRecruitmentProcessService {
 
     BaseResponseDTO createRecruitmentProcess(RecruitmentProcessRequestDTO recruitmentProcessRequestDTO);
-    List<RecruitmentProcessRequestDTO> getAllRecruitmentProcesses(int pageNumber);
+    List<RecruitmentProcessRequestDTO> getAllRecruitmentProcesses(int pageNumber,  String sortBy, String sortDirection);
     void getSingleRecruitmentProcess(Long recruitmentProcessId);
     void editRecruitmentProcess(Long recruitmentProcessId);
 
