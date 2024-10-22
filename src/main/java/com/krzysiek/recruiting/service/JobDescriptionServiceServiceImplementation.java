@@ -2,7 +2,8 @@ package com.krzysiek.recruiting.service;
 
 import com.krzysiek.recruiting.dto.JobDescriptionDTO;
 import com.krzysiek.recruiting.enums.WorkLocation;
-import com.krzysiek.recruiting.exception.JobDescriptionNotFoundException;
+import com.krzysiek.recruiting.exception.customExceptions.JobDescriptionAlreadyExistsException;
+import com.krzysiek.recruiting.exception.customExceptions.JobDescriptionNotFoundException;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import com.krzysiek.recruiting.mapper.JobDescriptionMapper;
 import com.krzysiek.recruiting.model.JobDescription;
@@ -29,6 +30,9 @@ public class JobDescriptionServiceServiceImplementation implements IJobDescripti
     public JobDescription createJobDescription(JobDescriptionDTO jobDescriptionDTO) {
         try {
             validateJobDescriptionDTO(jobDescriptionDTO);
+            if (isJobDescriptionExists(jobDescriptionDTO)) {
+                throw new JobDescriptionAlreadyExistsException("Job description with company name: " + jobDescriptionDTO.companyName() + ", job title: " + jobDescriptionDTO.jobTitle() + " and requirements: " + jobDescriptionDTO.requirements() + " already exists");
+            }
             JobDescription jobDescription = jobDescriptionMapper.toEntity(jobDescriptionDTO);
             return jobDescriptionRepository.save(jobDescription);
         } catch (Exception ex) {
@@ -53,5 +57,9 @@ public class JobDescriptionServiceServiceImplementation implements IJobDescripti
         if ((jobDescriptionDTO.minRate() != null  && jobDescriptionDTO.maxRate() != null) && jobDescriptionDTO.minRate().compareTo(jobDescriptionDTO.maxRate()) > 0) {
             throw new ValidationException("Min rate must be less than or equal to max rate.");
         }
+    }
+
+    private boolean isJobDescriptionExists(JobDescriptionDTO jobDescriptionDTO) {
+        return jobDescriptionRepository.existsByCompanyNameAndJobTitleAndRequirements(jobDescriptionDTO.companyName(), jobDescriptionDTO.jobTitle(), jobDescriptionDTO.requirements());
     }
 }

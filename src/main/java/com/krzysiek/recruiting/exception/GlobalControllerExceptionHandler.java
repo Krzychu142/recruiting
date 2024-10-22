@@ -1,7 +1,8 @@
 package com.krzysiek.recruiting.exception;
 
-import com.krzysiek.recruiting.dto.ErrorResponseDTO;
+import com.krzysiek.recruiting.dto.responsDTOs.ErrorResponseDTO;
 import com.krzysiek.recruiting.dto.FieldErrorDTO;
+import com.krzysiek.recruiting.exception.customExceptions.*;
 import com.krzysiek.recruiting.service.EmailService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -134,6 +135,11 @@ public class GlobalControllerExceptionHandler extends BaseExceptionHandler{
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleNoResourceFoundException(NoResourceFoundException ex, HttpServletRequest servletRequest) {
         return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.NOT_FOUND));
+    }
+
+    @ExceptionHandler(JobDescriptionAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleJobDescriptionAlreadyExistsException(JobDescriptionAlreadyExistsException ex, HttpServletRequest servletRequest) {
+        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.CONFLICT));
     }
 
     @ExceptionHandler(Exception.class)

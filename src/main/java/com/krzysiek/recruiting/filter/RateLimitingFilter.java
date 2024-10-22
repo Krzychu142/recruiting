@@ -1,7 +1,7 @@
 package com.krzysiek.recruiting.filter;
 
 
-import com.krzysiek.recruiting.exception.RateLimitingException;
+import com.krzysiek.recruiting.exception.customExceptions.RateLimitingException;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.ConsumptionProbe;
 import com.github.benmanes.caffeine.cache.Cache;

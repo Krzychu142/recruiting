@@ -1,6 +1,8 @@
 package com.krzysiek.recruiting.exception;
 
-import com.krzysiek.recruiting.dto.ErrorResponseDTO;
+import com.krzysiek.recruiting.dto.responsDTOs.ErrorResponseDTO;
+import com.krzysiek.recruiting.exception.customExceptions.UserAlreadyExistsException;
+import com.krzysiek.recruiting.exception.customExceptions.UserNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

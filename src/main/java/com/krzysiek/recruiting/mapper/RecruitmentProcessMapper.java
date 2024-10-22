@@ -1,7 +1,7 @@
 package com.krzysiek.recruiting.mapper;
 
 
-import com.krzysiek.recruiting.dto.RecruitmentProcessRequestDTO;
+import com.krzysiek.recruiting.dto.requestDTOs.RecruitmentProcessRequestDTO;
 import com.krzysiek.recruiting.dto.RecruitmentProcessDTO;
 import com.krzysiek.recruiting.model.RecruitmentProcess;
 import com.krzysiek.recruiting.model.User;
@@ -33,6 +33,7 @@ public abstract class RecruitmentProcessMapper {
     @Mapping(source = "recruitmentTaskId", target = "recruitmentTask", qualifiedByName = "mapRecruitmentTask")
     public abstract RecruitmentProcess toEntity(RecruitmentProcessDTO processDTO);
 
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "jobDescription", target = "jobDescriptionDTO")
     @Mapping(source = "cv.id", target = "cvId")
     @Mapping(source = "recruitmentTask.id", target = "recruitmentTaskId")

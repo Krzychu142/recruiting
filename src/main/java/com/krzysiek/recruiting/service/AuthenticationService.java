@@ -1,10 +1,15 @@
 package com.krzysiek.recruiting.service;
 
 import com.krzysiek.recruiting.dto.*;
+import com.krzysiek.recruiting.dto.requestDTOs.LoginRequestDTO;
+import com.krzysiek.recruiting.dto.requestDTOs.RegisterRequestDTO;
+import com.krzysiek.recruiting.dto.requestDTOs.ResetPasswordRequestDTO;
+import com.krzysiek.recruiting.dto.responsDTOs.BaseResponseDTO;
+import com.krzysiek.recruiting.dto.responsDTOs.LoginResponseDTO;
 import com.krzysiek.recruiting.enums.TokensType;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
-import com.krzysiek.recruiting.exception.UserAlreadyExistsException;
-import com.krzysiek.recruiting.exception.UserNotFoundException;
+import com.krzysiek.recruiting.exception.customExceptions.UserAlreadyExistsException;
+import com.krzysiek.recruiting.exception.customExceptions.UserNotFoundException;
 import com.krzysiek.recruiting.mapper.UserMapper;
 import com.krzysiek.recruiting.model.RefreshToken;
 import com.krzysiek.recruiting.model.User;

@@ -1,4 +1,4 @@
-package com.krzysiek.recruiting.dto;
+package com.krzysiek.recruiting.dto.requestDTOs;
 
 import com.krzysiek.recruiting.enums.FileType;
 import jakarta.validation.constraints.NotNull;

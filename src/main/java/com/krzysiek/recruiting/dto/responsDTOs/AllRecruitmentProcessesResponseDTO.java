@@ -1,5 +1,6 @@
-package com.krzysiek.recruiting.dto;
+package com.krzysiek.recruiting.dto.responsDTOs;
 
+import com.krzysiek.recruiting.dto.requestDTOs.RecruitmentProcessRequestDTO;
 import lombok.Getter;
 
 import java.util.List;
