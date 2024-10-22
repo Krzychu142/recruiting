@@ -4,6 +4,7 @@ import com.krzysiek.recruiting.dto.responsDTOs.AllRecruitmentProcessesResponseDT
 import com.krzysiek.recruiting.dto.responsDTOs.BaseResponseDTO;
 import com.krzysiek.recruiting.dto.requestDTOs.RecruitmentProcessRequestDTO;
 import com.krzysiek.recruiting.enums.RecruitmentProcessStatus;
+import com.krzysiek.recruiting.service.IRecruitmentProcessService;
 import com.krzysiek.recruiting.service.implementation.RecruitmentProcessServiceImplementation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -16,9 +17,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/recruitment")
 public class RecruitmentProcessController {
 
-    private final RecruitmentProcessServiceImplementation recruitmentProcessService;
+    private final IRecruitmentProcessService recruitmentProcessService;
 
-    public RecruitmentProcessController(RecruitmentProcessServiceImplementation recruitmentProcessServiceImplementation) {
+    public RecruitmentProcessController(IRecruitmentProcessService recruitmentProcessServiceImplementation) {
         this.recruitmentProcessService = recruitmentProcessServiceImplementation;
     }
 
