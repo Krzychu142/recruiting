@@ -3,7 +3,6 @@ package com.krzysiek.recruiting.service.implementation;
 import com.krzysiek.recruiting.dto.responsDTOs.BaseResponseDTO;
 import com.krzysiek.recruiting.dto.requestDTOs.RecruitmentProcessRequestDTO;
 import com.krzysiek.recruiting.dto.RecruitmentProcessDTO;
-import com.krzysiek.recruiting.enums.FileType;
 import com.krzysiek.recruiting.enums.RecruitmentProcessStatus;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import com.krzysiek.recruiting.exception.customExceptions.RecruitmentProcessNotFoundException;
@@ -14,9 +13,9 @@ import com.krzysiek.recruiting.repository.RecruitmentProcessRepository;
 import com.krzysiek.recruiting.repository.specyfication.RecruitmentProcessSpecification;
 import com.krzysiek.recruiting.service.IJobDescriptionService;
 import com.krzysiek.recruiting.service.IRecruitmentProcessService;
-import com.krzysiek.recruiting.validator.RecruitmentProcessSortValidator;
+import com.krzysiek.recruiting.validator.IRecruitmentProcessServiceValidator;
+import com.krzysiek.recruiting.validator.implementation.RecruitmentProcessSortValidator;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ValidationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,31 +33,32 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
     private final ThrowCorrectException throwCorrectException;
     private final IJobDescriptionService jobDescriptionServiceService;
     private final RecruitmentProcessMapper recruitmentProcessMapper;
-    private final FileService fileService;
     private final AuthenticationService authenticationService;
     private final RecruitmentProcessSortValidator sortValidator;
+    private final IRecruitmentProcessServiceValidator recruitmentProcessServiceValidator;
 
     public RecruitmentProcessServiceImplementation(RecruitmentProcessRepository repository,
                                                    ThrowCorrectException throwCorrectException,
                                                    IJobDescriptionService jobDescriptionService,
                                                    RecruitmentProcessMapper recruitmentProcessMapper,
-                                                   FileService fileService,
                                                    AuthenticationService authenticationService,
-                                                   RecruitmentProcessSortValidator sortValidator) {
+                                                   RecruitmentProcessSortValidator sortValidator,
+                                                   IRecruitmentProcessServiceValidator recruitmentProcessServiceValidator
+    ) {
         this.recruitmentProcessRepository = repository;
         this.throwCorrectException = throwCorrectException;
         this.jobDescriptionServiceService = jobDescriptionService;
         this.recruitmentProcessMapper = recruitmentProcessMapper;
-        this.fileService = fileService;
         this.authenticationService = authenticationService;
         this.sortValidator = sortValidator;
+        this.recruitmentProcessServiceValidator = recruitmentProcessServiceValidator;
     }
 
     @Transactional
     @Override
     public BaseResponseDTO createRecruitmentProcess(RecruitmentProcessRequestDTO recruitmentProcessRequestDTO) {
         try {
-            validateCreateRecruitmentProcessDTO(recruitmentProcessRequestDTO);
+            recruitmentProcessServiceValidator.validateCreateRecruitmentProcessDTO(recruitmentProcessRequestDTO);
             JobDescription jobDescription = jobDescriptionServiceService.createJobDescription(recruitmentProcessRequestDTO.jobDescriptionDTO());
             RecruitmentProcessDTO recruitmentProcessDTO = new RecruitmentProcessDTO(
                     null,
@@ -124,39 +124,6 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
                     .orElseThrow(() -> new RecruitmentProcessNotFoundException("Recruitment process with id: " + recruitmentProcessId + " not found"));
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
-        }
-    }
-
-    private void validateCreateRecruitmentProcessDTO(RecruitmentProcessRequestDTO dto) {
-        if(dto.dateOfApplication() == null) {
-            throw new ValidationException("Date of application is required");
-        }
-        if (!dto.hasRecruitmentTask() && dto.recruitmentTaskId() != null) {
-            throw new ValidationException("You can't attach a recruitment task if process is marked as with no recruitment task.");
-        }
-        if (dto.processEndDate() != null && dto.dateOfApplication().isAfter(dto.processEndDate())) {
-            throw new ValidationException("Date of application can't be after process end date.");
-        }
-        if (dto.taskDeadline() != null && dto.dateOfApplication().isAfter(dto.taskDeadline())) {
-            throw new ValidationException("Date of application can't be after task deadline.");
-        }
-        if (dto.evaluationDeadline() != null && dto.dateOfApplication().isAfter(dto.evaluationDeadline())) {
-            throw new ValidationException("Date of application can't be after evaluation deadline.");
-        }
-        if (dto.taskDeadline() != null && dto.evaluationDeadline() != null && dto.taskDeadline().isAfter(dto.evaluationDeadline())) {
-            throw new ValidationException("Task deadline can't be after evaluation deadline.");
-        }
-        if (!dto.hasRecruitmentTask() && dto.recruitmentTaskStatus() != null) {
-            throw new ValidationException("Invalid task status for process with attached recruitment task.");
-        }
-        if (dto.hasRecruitmentTask() && dto.recruitmentTaskStatus() == null) {
-            throw new ValidationException("Recruitment task status is required if there is a recruitment task.");
-        }
-        if (dto.cvId() != null) {
-            fileService.checkIsFileExistsInDatabaseByIdTypeUserId(dto.cvId(), FileType.CV);
-        }
-        if (dto.recruitmentTaskId() != null) {
-            fileService.checkIsFileExistsInDatabaseByIdTypeUserId(dto.recruitmentTaskId(), FileType.RECRUITMENT_TASK);
         }
     }
 }
