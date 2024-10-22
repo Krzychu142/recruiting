@@ -102,7 +102,7 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
     @Override
     public void editRecruitmentProcess(Long recruitmentProcessId) {
         try {
-            // it should take old Long RecruitmentProcessId and EditableRecruitmentProcessRequestDTO
+            // it should take old Long RecruitmentProcessId and
             // try to find old (if not found throw an exception)
             // validate EditableRecruitmentProcessRequestDTO
             // change editable find in model by Properties passed by EditableRecruitmentProcessRequestDTO
@@ -128,16 +128,19 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
     }
 
     private void validateCreateRecruitmentProcessDTO(RecruitmentProcessRequestDTO dto) {
+        if(dto.dateOfApplication() == null) {
+            throw new ValidationException("Date of application is required");
+        }
         if (!dto.hasRecruitmentTask() && dto.recruitmentTaskId() != null) {
             throw new ValidationException("You can't attach a recruitment task if process is marked as with no recruitment task.");
         }
-        if (dto.dateOfApplication() != null && dto.processEndDate() != null && dto.dateOfApplication().isAfter(dto.processEndDate())) {
+        if (dto.processEndDate() != null && dto.dateOfApplication().isAfter(dto.processEndDate())) {
             throw new ValidationException("Date of application can't be after process end date.");
         }
-        if (dto.dateOfApplication() != null && dto.taskDeadline() != null && dto.dateOfApplication().isAfter(dto.taskDeadline())) {
+        if (dto.taskDeadline() != null && dto.dateOfApplication().isAfter(dto.taskDeadline())) {
             throw new ValidationException("Date of application can't be after task deadline.");
         }
-        if (dto.dateOfApplication() != null && dto.evaluationDeadline() != null && dto.dateOfApplication().isAfter(dto.evaluationDeadline())) {
+        if (dto.evaluationDeadline() != null && dto.dateOfApplication().isAfter(dto.evaluationDeadline())) {
             throw new ValidationException("Date of application can't be after evaluation deadline.");
         }
         if (dto.taskDeadline() != null && dto.evaluationDeadline() != null && dto.taskDeadline().isAfter(dto.evaluationDeadline())) {
