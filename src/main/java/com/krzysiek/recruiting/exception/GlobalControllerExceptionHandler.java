@@ -3,7 +3,7 @@ package com.krzysiek.recruiting.exception;
 import com.krzysiek.recruiting.dto.responsDTOs.ErrorResponseDTO;
 import com.krzysiek.recruiting.dto.FieldErrorDTO;
 import com.krzysiek.recruiting.exception.customExceptions.*;
-import com.krzysiek.recruiting.service.EmailService;
+import com.krzysiek.recruiting.service.implementation.EmailService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ValidationException;

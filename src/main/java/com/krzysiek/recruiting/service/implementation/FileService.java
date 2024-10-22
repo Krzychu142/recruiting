@@ -1,4 +1,4 @@
-package com.krzysiek.recruiting.service;
+package com.krzysiek.recruiting.service.implementation;
 
 import com.krzysiek.recruiting.config.StorageProperties;
 import com.krzysiek.recruiting.dto.FileDTO;
@@ -11,6 +11,7 @@ import com.krzysiek.recruiting.mapper.FileMapper;
 import com.krzysiek.recruiting.model.File;
 import com.krzysiek.recruiting.model.User;
 import com.krzysiek.recruiting.repository.FileRepository;
+import com.krzysiek.recruiting.service.StorageService;
 import jakarta.transaction.Transactional;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;

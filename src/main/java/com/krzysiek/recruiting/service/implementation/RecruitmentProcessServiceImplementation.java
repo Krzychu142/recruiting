@@ -1,15 +1,19 @@
-package com.krzysiek.recruiting.service;
+package com.krzysiek.recruiting.service.implementation;
 
 import com.krzysiek.recruiting.dto.responsDTOs.BaseResponseDTO;
 import com.krzysiek.recruiting.dto.requestDTOs.RecruitmentProcessRequestDTO;
 import com.krzysiek.recruiting.dto.RecruitmentProcessDTO;
 import com.krzysiek.recruiting.enums.FileType;
+import com.krzysiek.recruiting.enums.RecruitmentProcessStatus;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import com.krzysiek.recruiting.exception.customExceptions.RecruitmentProcessNotFoundException;
 import com.krzysiek.recruiting.mapper.RecruitmentProcessMapper;
 import com.krzysiek.recruiting.model.JobDescription;
 import com.krzysiek.recruiting.model.RecruitmentProcess;
 import com.krzysiek.recruiting.repository.RecruitmentProcessRepository;
+import com.krzysiek.recruiting.repository.specyfication.RecruitmentProcessSpecification;
+import com.krzysiek.recruiting.service.IJobDescriptionService;
+import com.krzysiek.recruiting.service.IRecruitmentProcessService;
 import com.krzysiek.recruiting.validator.RecruitmentProcessSortValidator;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
@@ -17,17 +21,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class RecruitmentProcessServiceImplementation implements IRecruitmentProcessService{
+public class RecruitmentProcessServiceImplementation implements IRecruitmentProcessService {
 
     private final RecruitmentProcessRepository recruitmentProcessRepository;
     private final ThrowCorrectException throwCorrectException;
-    private final JobDescriptionServiceServiceImplementation jobDescriptionServiceService;
+    private final IJobDescriptionService jobDescriptionServiceService;
     private final RecruitmentProcessMapper recruitmentProcessMapper;
     private final FileService fileService;
     private final AuthenticationService authenticationService;
@@ -35,14 +40,14 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
 
     public RecruitmentProcessServiceImplementation(RecruitmentProcessRepository repository,
                                                    ThrowCorrectException throwCorrectException,
-                                                   JobDescriptionServiceServiceImplementation jobDescriptionServiceServiceImplementation,
+                                                   IJobDescriptionService jobDescriptionService,
                                                    RecruitmentProcessMapper recruitmentProcessMapper,
                                                    FileService fileService,
                                                    AuthenticationService authenticationService,
                                                    RecruitmentProcessSortValidator sortValidator) {
         this.recruitmentProcessRepository = repository;
         this.throwCorrectException = throwCorrectException;
-        this.jobDescriptionServiceService = jobDescriptionServiceServiceImplementation;
+        this.jobDescriptionServiceService = jobDescriptionService;
         this.recruitmentProcessMapper = recruitmentProcessMapper;
         this.fileService = fileService;
         this.authenticationService = authenticationService;
@@ -77,13 +82,16 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
     }
 
     @Override
-    public List<RecruitmentProcessRequestDTO> getAllRecruitmentProcesses(int pageNumber, String sortBy, String sortDirection) {
+    public List<RecruitmentProcessRequestDTO> getAllRecruitmentProcesses(int pageNumber, String sortBy, String sortDirection, RecruitmentProcessStatus status, Long cvId) {
         try {
             Sort.Direction direction = sortValidator.validateSortDirection(sortDirection);
             sortValidator.validateSortBy(sortBy);
             Pageable pageable = PageRequest.of(pageNumber, 5, Sort.by(direction, sortBy));
-            Page<RecruitmentProcess> usersAllRecruitmentProcess = recruitmentProcessRepository.findAllByUserId(authenticationService.getLoggedInUserId(), pageable);
-            return usersAllRecruitmentProcess.stream()
+            Long userId = authenticationService.getLoggedInUserId();
+            Specification<RecruitmentProcess> specification = RecruitmentProcessSpecification.buildSpecification(userId, status, cvId);
+            Page<RecruitmentProcess> recruitmentProcesses = recruitmentProcessRepository.findAll(specification, pageable);
+
+            return recruitmentProcesses.stream()
                     .map(recruitmentProcessMapper::toRecruitmentProcessDTO)
                     .collect(Collectors.toList());
         } catch (Exception ex) {

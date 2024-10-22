@@ -1,13 +1,14 @@
-package com.krzysiek.recruiting.service;
+package com.krzysiek.recruiting.service.implementation;
 
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import com.krzysiek.recruiting.exception.customExceptions.UserNotFoundException;
 import com.krzysiek.recruiting.model.User;
 import com.krzysiek.recruiting.repository.UserRepository;
+import com.krzysiek.recruiting.service.IUserService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService implements  IUserService{
+public class UserService implements IUserService {
 
     private final UserRepository userRepository;
     private final ThrowCorrectException throwCorrectException;

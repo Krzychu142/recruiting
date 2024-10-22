@@ -1,4 +1,4 @@
-package com.krzysiek.recruiting.service;
+package com.krzysiek.recruiting.service.implementation;
 
 import com.krzysiek.recruiting.enums.Role;
 import com.krzysiek.recruiting.enums.TokensType;

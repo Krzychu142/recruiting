@@ -1,4 +1,4 @@
-package com.krzysiek.recruiting.service;
+package com.krzysiek.recruiting.service.implementation;
 
 import com.krzysiek.recruiting.dto.JobDescriptionDTO;
 import com.krzysiek.recruiting.enums.WorkLocation;
@@ -8,6 +8,7 @@ import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import com.krzysiek.recruiting.mapper.JobDescriptionMapper;
 import com.krzysiek.recruiting.model.JobDescription;
 import com.krzysiek.recruiting.repository.JobDescriptionRepository;
+import com.krzysiek.recruiting.service.IJobDescriptionService;
 import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Service;
 

@@ -3,7 +3,7 @@ package com.krzysiek.recruiting.controller;
 import com.krzysiek.recruiting.dto.requestDTOs.*;
 import com.krzysiek.recruiting.dto.responsDTOs.BaseResponseDTO;
 import com.krzysiek.recruiting.dto.responsDTOs.LoginResponseDTO;
-import com.krzysiek.recruiting.service.AuthenticationService;
+import com.krzysiek.recruiting.service.implementation.AuthenticationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

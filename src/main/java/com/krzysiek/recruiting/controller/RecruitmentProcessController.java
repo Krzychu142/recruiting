@@ -4,7 +4,7 @@ import com.krzysiek.recruiting.dto.responsDTOs.AllRecruitmentProcessesResponseDT
 import com.krzysiek.recruiting.dto.responsDTOs.BaseResponseDTO;
 import com.krzysiek.recruiting.dto.requestDTOs.RecruitmentProcessRequestDTO;
 import com.krzysiek.recruiting.enums.RecruitmentProcessStatus;
-import com.krzysiek.recruiting.service.RecruitmentProcessServiceImplementation;
+import com.krzysiek.recruiting.service.implementation.RecruitmentProcessServiceImplementation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
@@ -37,7 +37,7 @@ public class RecruitmentProcessController {
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(
                 new AllRecruitmentProcessesResponseDTO("All user's recruitment process list. Page: " + pageNumber + ".",
-                        recruitmentProcessService.getAllRecruitmentProcesses(pageNumber, sortBy, sortDirection))
+                        recruitmentProcessService.getAllRecruitmentProcesses(pageNumber, sortBy, sortDirection, status, cvId))
         );
     }
 }

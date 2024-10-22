@@ -4,7 +4,7 @@ import com.krzysiek.recruiting.dto.responsDTOs.BaseResponseDTO;
 import com.krzysiek.recruiting.dto.requestDTOs.DeleteFileRequestDTO;
 import com.krzysiek.recruiting.dto.responsDTOs.LoadAllFileResponseDTO;
 import com.krzysiek.recruiting.enums.FileType;
-import com.krzysiek.recruiting.service.FileService;
+import com.krzysiek.recruiting.service.implementation.FileService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.core.io.Resource;
