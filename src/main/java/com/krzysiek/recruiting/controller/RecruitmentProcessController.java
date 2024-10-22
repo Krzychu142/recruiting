@@ -40,4 +40,9 @@ public class RecruitmentProcessController {
                         recruitmentProcessService.getAllRecruitmentProcesses(pageNumber, sortBy, sortDirection, status, cvId))
         );
     }
+
+    @PutMapping
+    public ResponseEntity<BaseResponseDTO> editRecruitmentProcess(){
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponseDTO("Successfully edited recruitment process."));
+    }
 }
