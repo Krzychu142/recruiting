@@ -158,7 +158,7 @@ public class FileService implements StorageService {
 
     public File getFileById(Long id) {
         try {
-            return fileRepository.findById(id).orElseThrow(() -> new StorageFileNotFoundException("File with id " + id + " not found"));
+            return fileRepository.findById(id).orElseThrow(() -> new StorageFileNotFoundException("File with id " + id + " not found."));
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
         }
@@ -167,7 +167,7 @@ public class FileService implements StorageService {
     public void checkIsFileExistsInDatabaseByIdTypeUserId(Long fileId, FileType fileType) {
         Long loggedInUserId = authenticationService.getLoggedInUserId();
         fileRepository.findByIdAndFileTypeAndUserId(fileId, fileType, loggedInUserId)
-                .orElseThrow(() -> new StorageFileNotFoundException("File with id: " + fileId + " type: " + fileType + "owned by user with id: " + loggedInUserId + " not found"));
+                .orElseThrow(() -> new StorageFileNotFoundException("File with id: " + fileId + " type: " + fileType + " owned by user with id: " + loggedInUserId + " not found."));
     }
 
     private FileDTO getFileDTOById(Long fileId) {

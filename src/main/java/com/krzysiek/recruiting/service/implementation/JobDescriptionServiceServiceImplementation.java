@@ -49,6 +49,19 @@ public class JobDescriptionServiceServiceImplementation implements IJobDescripti
         }
     }
 
+    @Override
+    public void updateJobDescription(JobDescription oldJobDescription, JobDescriptionDTO newJobDescriptionDTO) {
+        oldJobDescription.setCompanyName(newJobDescriptionDTO.companyName());
+        oldJobDescription.setJobTitle(newJobDescriptionDTO.jobTitle());
+        oldJobDescription.setCompanyAddress(newJobDescriptionDTO.companyAddress());
+        oldJobDescription.setWorkLocation(newJobDescriptionDTO.workLocation());
+        oldJobDescription.setContractType(newJobDescriptionDTO.contractType());
+        oldJobDescription.setRequirements(newJobDescriptionDTO.requirements());
+        oldJobDescription.setMinRate(newJobDescriptionDTO.minRate());
+        oldJobDescription.setMaxRate(newJobDescriptionDTO.maxRate());
+        jobDescriptionRepository.save(oldJobDescription);
+    }
+
     private boolean isJobDescriptionExists(JobDescriptionDTO jobDescriptionDTO) {
         return jobDescriptionRepository.existsByCompanyNameAndJobTitleAndRequirements(jobDescriptionDTO.companyName(), jobDescriptionDTO.jobTitle(), jobDescriptionDTO.requirements());
     }

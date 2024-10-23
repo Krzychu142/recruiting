@@ -1,8 +1,8 @@
 package com.krzysiek.recruiting.controller;
 
 import com.krzysiek.recruiting.dto.responsDTOs.AllRecruitmentProcessesResponseDTO;
-import com.krzysiek.recruiting.dto.responsDTOs.BaseResponseDTO;
 import com.krzysiek.recruiting.dto.requestDTOs.RecruitmentProcessRequestDTO;
+import com.krzysiek.recruiting.dto.responsDTOs.RecruitmentProcessResponseDTO;
 import com.krzysiek.recruiting.enums.RecruitmentProcessStatus;
 import com.krzysiek.recruiting.service.IRecruitmentProcessService;
 import jakarta.validation.Valid;
@@ -18,13 +18,16 @@ public class RecruitmentProcessController {
 
     private final IRecruitmentProcessService recruitmentProcessService;
 
-    public RecruitmentProcessController(IRecruitmentProcessService recruitmentProcessServiceImplementation) {
-        this.recruitmentProcessService = recruitmentProcessServiceImplementation;
+    public RecruitmentProcessController(IRecruitmentProcessService recruitmentProcessService) {
+        this.recruitmentProcessService = recruitmentProcessService;
     }
 
     @PostMapping
-    public ResponseEntity<BaseResponseDTO> createRecruitmentProcess(@Valid @RequestBody RecruitmentProcessRequestDTO recruitmentProcessRequestDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(recruitmentProcessService.createRecruitmentProcess(recruitmentProcessRequestDTO));
+    public ResponseEntity<RecruitmentProcessResponseDTO> createRecruitmentProcess(@Valid @RequestBody RecruitmentProcessRequestDTO recruitmentProcessRequestDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new RecruitmentProcessResponseDTO("Successfully created recruitment process.",
+                        recruitmentProcessService.createRecruitmentProcess(recruitmentProcessRequestDTO))
+                );
     }
 
     @GetMapping
@@ -42,7 +45,10 @@ public class RecruitmentProcessController {
     }
 
     @PutMapping
-    public ResponseEntity<BaseResponseDTO> editRecruitmentProcess(){
-        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponseDTO("Successfully edited recruitment process."));
+    public ResponseEntity<RecruitmentProcessResponseDTO> editRecruitmentProcess(@Valid @RequestBody RecruitmentProcessRequestDTO recruitmentProcessRequestDTO){
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new RecruitmentProcessResponseDTO("Successfully edited recruitment process.",
+                        recruitmentProcessService.updateRecruitmentProcess(recruitmentProcessRequestDTO))
+        );
     }
 }

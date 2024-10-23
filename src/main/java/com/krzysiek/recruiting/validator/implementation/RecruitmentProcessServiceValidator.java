@@ -18,13 +18,16 @@ public class RecruitmentProcessServiceValidator implements IRecruitmentProcessSe
 
     @Override
     public void validateEditRecruitmentProcessDTO(RecruitmentProcessRequestDTO dto) {
-
+        if (dto.id() == null) {
+            throw new ValidationException("Recruitment process id is required.");
+        }
+        validateCreateRecruitmentProcessDTO(dto);
     }
 
     @Override
     public void validateCreateRecruitmentProcessDTO(RecruitmentProcessRequestDTO dto) {
         if(dto.dateOfApplication() == null) {
-            throw new ValidationException("Date of application is required");
+            throw new ValidationException("Date of application is required.");
         }
         if (!dto.hasRecruitmentTask() && dto.recruitmentTaskId() != null) {
             throw new ValidationException("You can't attach a recruitment task if process is marked as with no recruitment task.");

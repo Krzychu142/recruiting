@@ -1,5 +1,6 @@
 package com.krzysiek.recruiting.service.implementation;
 
+import com.krzysiek.recruiting.dto.JobDescriptionDTO;
 import com.krzysiek.recruiting.dto.responsDTOs.BaseResponseDTO;
 import com.krzysiek.recruiting.dto.requestDTOs.RecruitmentProcessRequestDTO;
 import com.krzysiek.recruiting.dto.RecruitmentProcessDTO;
@@ -7,15 +8,18 @@ import com.krzysiek.recruiting.enums.RecruitmentProcessStatus;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import com.krzysiek.recruiting.exception.customExceptions.RecruitmentProcessNotFoundException;
 import com.krzysiek.recruiting.mapper.RecruitmentProcessMapper;
+import com.krzysiek.recruiting.model.File;
 import com.krzysiek.recruiting.model.JobDescription;
 import com.krzysiek.recruiting.model.RecruitmentProcess;
 import com.krzysiek.recruiting.repository.RecruitmentProcessRepository;
 import com.krzysiek.recruiting.repository.specyfication.RecruitmentProcessSpecification;
 import com.krzysiek.recruiting.service.IJobDescriptionService;
 import com.krzysiek.recruiting.service.IRecruitmentProcessService;
+import com.krzysiek.recruiting.validator.IJobDescriptionServiceValidator;
 import com.krzysiek.recruiting.validator.IRecruitmentProcessServiceValidator;
 import com.krzysiek.recruiting.validator.implementation.RecruitmentProcessSortValidator;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ValidationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +28,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,11 +36,13 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
 
     private final RecruitmentProcessRepository recruitmentProcessRepository;
     private final ThrowCorrectException throwCorrectException;
-    private final IJobDescriptionService jobDescriptionServiceService;
+    private final IJobDescriptionService jobDescriptionService;
     private final RecruitmentProcessMapper recruitmentProcessMapper;
     private final AuthenticationService authenticationService;
     private final RecruitmentProcessSortValidator sortValidator;
     private final IRecruitmentProcessServiceValidator recruitmentProcessServiceValidator;
+    private final IJobDescriptionServiceValidator jobDescriptionServiceValidator;
+    private final FileService fileService;
 
     public RecruitmentProcessServiceImplementation(RecruitmentProcessRepository repository,
                                                    ThrowCorrectException throwCorrectException,
@@ -43,23 +50,26 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
                                                    RecruitmentProcessMapper recruitmentProcessMapper,
                                                    AuthenticationService authenticationService,
                                                    RecruitmentProcessSortValidator sortValidator,
-                                                   IRecruitmentProcessServiceValidator recruitmentProcessServiceValidator
-    ) {
+                                                   IRecruitmentProcessServiceValidator recruitmentProcessServiceValidator,
+                                                   IJobDescriptionServiceValidator jobDescriptionServiceValidator,
+                                                   FileService fileService) {
         this.recruitmentProcessRepository = repository;
         this.throwCorrectException = throwCorrectException;
-        this.jobDescriptionServiceService = jobDescriptionService;
+        this.jobDescriptionService = jobDescriptionService;
         this.recruitmentProcessMapper = recruitmentProcessMapper;
         this.authenticationService = authenticationService;
         this.sortValidator = sortValidator;
         this.recruitmentProcessServiceValidator = recruitmentProcessServiceValidator;
+        this.jobDescriptionServiceValidator = jobDescriptionServiceValidator;
+        this.fileService = fileService;
     }
 
     @Transactional
     @Override
-    public BaseResponseDTO createRecruitmentProcess(RecruitmentProcessRequestDTO recruitmentProcessRequestDTO) {
+    public RecruitmentProcessRequestDTO createRecruitmentProcess(RecruitmentProcessRequestDTO recruitmentProcessRequestDTO) {
         try {
             recruitmentProcessServiceValidator.validateCreateRecruitmentProcessDTO(recruitmentProcessRequestDTO);
-            JobDescription jobDescription = jobDescriptionServiceService.createJobDescription(recruitmentProcessRequestDTO.jobDescriptionDTO());
+            JobDescription jobDescription = jobDescriptionService.createJobDescription(recruitmentProcessRequestDTO.jobDescriptionDTO());
             RecruitmentProcessDTO recruitmentProcessDTO = new RecruitmentProcessDTO(
                     null,
                     authenticationService.getLoggedInUserId(),
@@ -74,8 +84,7 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
                     recruitmentProcessRequestDTO.status()
             );
             RecruitmentProcess recruitmentProcess = recruitmentProcessMapper.toEntity(recruitmentProcessDTO);
-            recruitmentProcessRepository.save(recruitmentProcess);
-            return new BaseResponseDTO("Successfully created recruitment process");
+            return recruitmentProcessMapper.toRecruitmentProcessDTO(recruitmentProcessRepository.save(recruitmentProcess));
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
         }
@@ -99,15 +108,39 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
         }
     }
 
+    @Transactional
     @Override
-    public void editRecruitmentProcess(Long recruitmentProcessId) {
+    public RecruitmentProcessRequestDTO updateRecruitmentProcess(RecruitmentProcessRequestDTO recruitmentProcessRequestDTO) {
         try {
-            // it should take old Long RecruitmentProcessId and
-            // try to find old (if not found throw an exception)
-            // validate EditableRecruitmentProcessRequestDTO
-            // change editable find in model by Properties passed by EditableRecruitmentProcessRequestDTO
-            // update model in database
-            return;
+            recruitmentProcessServiceValidator.validateEditRecruitmentProcessDTO(recruitmentProcessRequestDTO);
+            JobDescriptionDTO newJobDescriptionDTO = recruitmentProcessRequestDTO.jobDescriptionDTO();
+            jobDescriptionServiceValidator.validateEditJobDescriptionDTO(newJobDescriptionDTO);
+            RecruitmentProcess oldRecruitmentProcess = getSingleRecruitmentProcessDTO(recruitmentProcessRequestDTO.id());
+            JobDescription oldJobDescription = oldRecruitmentProcess.getJobDescription();
+            if (!Objects.equals(oldRecruitmentProcess.getJobDescription().getId(), newJobDescriptionDTO.id())) {
+                throw new ValidationException("Assigned to old recruitment process id of job description is different than provided new.");
+            }
+            jobDescriptionService.updateJobDescription(oldJobDescription, newJobDescriptionDTO);
+            //TODO: segment with files is to optimization, but as for now, let it be as it is
+            Long newCvId = recruitmentProcessRequestDTO.cvId();
+            if (!oldRecruitmentProcess.getCv().getId().equals(newCvId)) {
+                File newCv = fileService.getFileById(newCvId);
+                oldRecruitmentProcess.setCv(newCv);
+            }
+            Long newRecruitmentTaskId = recruitmentProcessRequestDTO.recruitmentTaskId();
+            File oldRecruitingTask = oldRecruitmentProcess.getRecruitmentTask();
+            if (oldRecruitingTask != null && !Objects.equals(oldRecruitingTask.getId(), newRecruitmentTaskId)) {
+                File newRecruitingTask = fileService.getFileById(newRecruitmentTaskId);
+                oldRecruitmentProcess.setRecruitmentTask(newRecruitingTask);
+            }
+            oldRecruitmentProcess.setDateOfApplication(recruitmentProcessRequestDTO.dateOfApplication());
+            oldRecruitmentProcess.setProcessEndDate(recruitmentProcessRequestDTO.processEndDate());
+            oldRecruitmentProcess.setHasRecruitmentTask(recruitmentProcessRequestDTO.hasRecruitmentTask());
+            oldRecruitmentProcess.setRecruitmentTaskStatus(recruitmentProcessRequestDTO.recruitmentTaskStatus());
+            oldRecruitmentProcess.setTaskDeadline(recruitmentProcessRequestDTO.taskDeadline());
+            oldRecruitmentProcess.setEvaluationDeadline(recruitmentProcessRequestDTO.evaluationDeadline());
+            oldRecruitmentProcess.setStatus(recruitmentProcessRequestDTO.status());
+            return recruitmentProcessMapper.toRecruitmentProcessDTO(recruitmentProcessRepository.save(oldRecruitmentProcess));
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
         }
@@ -118,7 +151,7 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
 
     }
 
-    private RecruitmentProcess getSingleRecruitmentProcess(Long recruitmentProcessId) {
+    private RecruitmentProcess getSingleRecruitmentProcessDTO(Long recruitmentProcessId) {
         try {
             return recruitmentProcessRepository.findById(recruitmentProcessId)
                     .orElseThrow(() -> new RecruitmentProcessNotFoundException("Recruitment process with id: " + recruitmentProcessId + " not found"));

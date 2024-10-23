@@ -20,4 +20,12 @@ public class JobDescriptionServiceServiceValidator implements IJobDescriptionSer
             throw new ValidationException("Min rate must be less than or equal to max rate.");
         }
     }
+
+    @Override
+    public void validateEditJobDescriptionDTO(JobDescriptionDTO jobDescriptionDTO) {
+        if (jobDescriptionDTO.id() == null) {
+            throw new ValidationException("Job description must have an ID to edit.");
+        }
+        validateJobDescriptionDTO(jobDescriptionDTO);
+    }
 }
