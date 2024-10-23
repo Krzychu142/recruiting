@@ -2,7 +2,7 @@ package com.krzysiek.recruiting.filter;
 
 import com.krzysiek.recruiting.enums.Role;
 import com.krzysiek.recruiting.enums.TokensType;
-import com.krzysiek.recruiting.service.JWTService;
+import com.krzysiek.recruiting.service.implementation.JWTService;
 import io.micrometer.common.lang.NonNullApi;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

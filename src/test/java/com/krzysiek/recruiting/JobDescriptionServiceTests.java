@@ -11,7 +11,7 @@ import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import com.krzysiek.recruiting.mapper.JobDescriptionMapper;
 import com.krzysiek.recruiting.model.JobDescription;
 import com.krzysiek.recruiting.repository.JobDescriptionRepository;
-import com.krzysiek.recruiting.service.JobDescriptionServiceServiceImplementation;
+import com.krzysiek.recruiting.service.implementation.JobDescriptionServiceServiceImplementation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

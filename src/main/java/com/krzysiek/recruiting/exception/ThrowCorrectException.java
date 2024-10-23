@@ -20,6 +20,8 @@ public class ThrowCorrectException {
             throw new UserNotFoundException(ex.getMessage());
         } else if (ex instanceof JobDescriptionAlreadyExistsException) {
             throw new JobDescriptionAlreadyExistsException(ex.getMessage());
+        } else if (ex instanceof RecruitmentProcessNotFoundException) {
+            throw new RecruitmentProcessNotFoundException(ex.getMessage());
         } else if (ex instanceof JpaSystemException) {
             throw new RuntimeException("JPA system error: " + ex.getMessage(), ex);
         } else if (ex instanceof SignatureException){

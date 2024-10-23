@@ -1,4 +1,4 @@
-package com.krzysiek.recruiting.service;
+package com.krzysiek.recruiting.service.implementation;
 
 import com.krzysiek.recruiting.config.StorageProperties;
 import com.krzysiek.recruiting.dto.FileDTO;
@@ -11,6 +11,7 @@ import com.krzysiek.recruiting.mapper.FileMapper;
 import com.krzysiek.recruiting.model.File;
 import com.krzysiek.recruiting.model.User;
 import com.krzysiek.recruiting.repository.FileRepository;
+import com.krzysiek.recruiting.service.StorageService;
 import jakarta.transaction.Transactional;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -157,7 +158,7 @@ public class FileService implements StorageService {
 
     public File getFileById(Long id) {
         try {
-            return fileRepository.findById(id).orElseThrow(() -> new StorageFileNotFoundException("File with id " + id + " not found"));
+            return fileRepository.findById(id).orElseThrow(() -> new StorageFileNotFoundException("File with id " + id + " not found."));
         } catch (Exception ex) {
             throw throwCorrectException.handleException(ex);
         }
@@ -166,7 +167,7 @@ public class FileService implements StorageService {
     public void checkIsFileExistsInDatabaseByIdTypeUserId(Long fileId, FileType fileType) {
         Long loggedInUserId = authenticationService.getLoggedInUserId();
         fileRepository.findByIdAndFileTypeAndUserId(fileId, fileType, loggedInUserId)
-                .orElseThrow(() -> new StorageFileNotFoundException("File with id: " + fileId + " type: " + fileType + "owned by user with id: " + loggedInUserId + " not found"));
+                .orElseThrow(() -> new StorageFileNotFoundException("File with id: " + fileId + " type: " + fileType + " owned by user with id: " + loggedInUserId + " not found."));
     }
 
     private FileDTO getFileDTOById(Long fileId) {

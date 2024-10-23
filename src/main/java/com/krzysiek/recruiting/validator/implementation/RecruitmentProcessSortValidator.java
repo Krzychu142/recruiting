@@ -1,4 +1,4 @@
-package com.krzysiek.recruiting.validator;
+package com.krzysiek.recruiting.validator.implementation;
 
 import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Component;

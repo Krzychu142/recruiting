@@ -1,17 +1,15 @@
-package com.krzysiek.recruiting.service;
+package com.krzysiek.recruiting.service.implementation;
 
 import com.krzysiek.recruiting.dto.JobDescriptionDTO;
-import com.krzysiek.recruiting.enums.WorkLocation;
 import com.krzysiek.recruiting.exception.customExceptions.JobDescriptionAlreadyExistsException;
 import com.krzysiek.recruiting.exception.customExceptions.JobDescriptionNotFoundException;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
 import com.krzysiek.recruiting.mapper.JobDescriptionMapper;
 import com.krzysiek.recruiting.model.JobDescription;
 import com.krzysiek.recruiting.repository.JobDescriptionRepository;
-import jakarta.validation.ValidationException;
+import com.krzysiek.recruiting.service.IJobDescriptionService;
+import com.krzysiek.recruiting.validator.IJobDescriptionServiceValidator;
 import org.springframework.stereotype.Service;
-
-import java.util.EnumSet;
 
 @Service
 public class JobDescriptionServiceServiceImplementation implements IJobDescriptionService {
@@ -19,17 +17,19 @@ public class JobDescriptionServiceServiceImplementation implements IJobDescripti
     private final ThrowCorrectException throwCorrectException;
     private final JobDescriptionRepository jobDescriptionRepository;
     private final JobDescriptionMapper jobDescriptionMapper;
+    private final IJobDescriptionServiceValidator jobDescriptionValidator;
 
-    public JobDescriptionServiceServiceImplementation (ThrowCorrectException throwCorrectException, JobDescriptionRepository jobDescriptionRepository, JobDescriptionMapper jobDescriptionMapper) {
+    public JobDescriptionServiceServiceImplementation (ThrowCorrectException throwCorrectException, JobDescriptionRepository jobDescriptionRepository, JobDescriptionMapper jobDescriptionMapper, IJobDescriptionServiceValidator jobDescriptionValidator) {
         this.throwCorrectException = throwCorrectException;
         this.jobDescriptionRepository = jobDescriptionRepository;
         this.jobDescriptionMapper = jobDescriptionMapper;
+        this.jobDescriptionValidator = jobDescriptionValidator;
     }
 
     @Override
     public JobDescription createJobDescription(JobDescriptionDTO jobDescriptionDTO) {
         try {
-            validateJobDescriptionDTO(jobDescriptionDTO);
+            jobDescriptionValidator.validateJobDescriptionDTO(jobDescriptionDTO);
             if (isJobDescriptionExists(jobDescriptionDTO)) {
                 throw new JobDescriptionAlreadyExistsException("Job description with company name: " + jobDescriptionDTO.companyName() + ", job title: " + jobDescriptionDTO.jobTitle() + " and requirements: " + jobDescriptionDTO.requirements() + " already exists");
             }
@@ -49,14 +49,17 @@ public class JobDescriptionServiceServiceImplementation implements IJobDescripti
         }
     }
 
-    private void validateJobDescriptionDTO(JobDescriptionDTO jobDescriptionDTO) {
-        if (EnumSet.of(WorkLocation.HYBRID, WorkLocation.ON_SITE).contains(jobDescriptionDTO.workLocation())
-                && jobDescriptionDTO.companyAddress() == null) {
-            throw new ValidationException("Company address is required for " + WorkLocation.HYBRID + " or " + WorkLocation.ON_SITE + ".");
-        }
-        if ((jobDescriptionDTO.minRate() != null  && jobDescriptionDTO.maxRate() != null) && jobDescriptionDTO.minRate().compareTo(jobDescriptionDTO.maxRate()) > 0) {
-            throw new ValidationException("Min rate must be less than or equal to max rate.");
-        }
+    @Override
+    public void updateJobDescription(JobDescription oldJobDescription, JobDescriptionDTO newJobDescriptionDTO) {
+        oldJobDescription.setCompanyName(newJobDescriptionDTO.companyName());
+        oldJobDescription.setJobTitle(newJobDescriptionDTO.jobTitle());
+        oldJobDescription.setCompanyAddress(newJobDescriptionDTO.companyAddress());
+        oldJobDescription.setWorkLocation(newJobDescriptionDTO.workLocation());
+        oldJobDescription.setContractType(newJobDescriptionDTO.contractType());
+        oldJobDescription.setRequirements(newJobDescriptionDTO.requirements());
+        oldJobDescription.setMinRate(newJobDescriptionDTO.minRate());
+        oldJobDescription.setMaxRate(newJobDescriptionDTO.maxRate());
+        jobDescriptionRepository.save(oldJobDescription);
     }
 
     private boolean isJobDescriptionExists(JobDescriptionDTO jobDescriptionDTO) {

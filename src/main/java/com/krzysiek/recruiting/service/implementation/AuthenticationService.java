@@ -1,4 +1,4 @@
-package com.krzysiek.recruiting.service;
+package com.krzysiek.recruiting.service.implementation;
 
 import com.krzysiek.recruiting.dto.*;
 import com.krzysiek.recruiting.dto.requestDTOs.LoginRequestDTO;
