@@ -24,7 +24,7 @@
         @JoinColumn(name = "user_id", nullable = false)
         private User user;
 
-        @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+        @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE, orphanRemoval = true)
         @JoinColumn(name = "job_description_id", referencedColumnName = "id", unique = true, nullable = false)
         private JobDescription jobDescription;
 

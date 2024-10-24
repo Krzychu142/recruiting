@@ -2,6 +2,7 @@ package com.krzysiek.recruiting.controller;
 
 import com.krzysiek.recruiting.dto.responsDTOs.AllRecruitmentProcessesResponseDTO;
 import com.krzysiek.recruiting.dto.requestDTOs.RecruitmentProcessRequestDTO;
+import com.krzysiek.recruiting.dto.responsDTOs.BaseResponseDTO;
 import com.krzysiek.recruiting.dto.responsDTOs.RecruitmentProcessResponseDTO;
 import com.krzysiek.recruiting.enums.RecruitmentProcessStatus;
 import com.krzysiek.recruiting.service.IRecruitmentProcessService;
@@ -50,5 +51,12 @@ public class RecruitmentProcessController {
                 new RecruitmentProcessResponseDTO("Successfully edited recruitment process.",
                         recruitmentProcessService.updateRecruitmentProcess(recruitmentProcessRequestDTO))
         );
+    }
+
+    @DeleteMapping
+    public ResponseEntity<BaseResponseDTO> deleteRecruitmentProcess(@RequestParam(name = "id") @Min(0) Long recruitmentProcessId){
+        // or simpler - 204 and no content
+        recruitmentProcessService.deleteRecruitmentProcess(recruitmentProcessId);
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponseDTO("Successfully deleted recruitment process."));
     }
 }
