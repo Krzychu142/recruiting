@@ -19,18 +19,16 @@ import com.krzysiek.recruiting.service.implementation.RecruitmentProcessServiceI
 import com.krzysiek.recruiting.validator.IJobDescriptionServiceValidator;
 import com.krzysiek.recruiting.validator.IRecruitmentProcessServiceValidator;
 import com.krzysiek.recruiting.validator.implementation.RecruitmentProcessSortValidator;
+import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
 
 import java.math.BigDecimal;
@@ -157,5 +155,56 @@ public class RecruitmentProcessServiceImplementationTest {
         verify(recruitmentProcessMapper, times(1)).toRecruitmentProcessDTO(any(RecruitmentProcess.class));
     }
 
+
+    @Test
+    void testCreateRecruitmentProcess_Fail_EndDateBeforeApplicationDate() {
+        // Given
+        RecruitmentProcessRequestDTO requestDTO = new RecruitmentProcessRequestDTO(
+                null,
+                new JobDescriptionDTO(
+                        null,
+                        "TEST NAME",
+                        "TEST JOB TITLE",
+                        "KRAKÓW JANA PAWŁA 39",
+                        WorkLocation.ON_SITE,
+                        ContractType.EMPLOYMENT_CONTRACT,
+                        "JAVA, SPRING, GIT",
+                        BigDecimal.valueOf(8000.00),
+                        BigDecimal.valueOf(12000.00)
+                ),
+                1L,
+                2L,
+                LocalDate.parse("2023-12-01"), // dateOfApplication
+                LocalDate.parse("2023-10-01"), // processEndDate < dateOfApplication
+                true,
+                RecruitmentTaskStatus.PENDING,
+                LocalDate.parse("2023-11-01"),
+                LocalDate.parse("2023-12-01"),
+                RecruitmentProcessStatus.IN_PROGRESS
+        );
+
+        doThrow(new ValidationException("Process end date cannot be before application date."))
+                .when(recruitmentProcessServiceValidator).validateCreateRecruitmentProcessDTO(requestDTO);
+
+        when(throwCorrectException.handleException(any(Exception.class)))
+                .thenReturn(new ValidationException("Process end date cannot be before application date."));
+
+        // When & Then
+        ValidationException exception = assertThrows(
+                ValidationException.class,
+                () -> recruitmentProcessService.createRecruitmentProcess(requestDTO)
+        );
+
+        assertEquals("Process end date cannot be before application date.", exception.getMessage());
+
+        // Verify interactions
+        verify(recruitmentProcessServiceValidator, times(1)).validateCreateRecruitmentProcessDTO(requestDTO);
+        verify(authenticationService, never()).getLoggedInUserId();
+        verify(jobDescriptionService, never()).createJobDescription(any(JobDescriptionDTO.class));
+        verify(recruitmentProcessMapper, never()).toEntity(any(RecruitmentProcessDTO.class));
+        verify(recruitmentProcessRepository, never()).save(any(RecruitmentProcess.class));
+        verify(recruitmentProcessMapper, never()).toRecruitmentProcessDTO(any(RecruitmentProcess.class));
+        verify(throwCorrectException, times(1)).handleException(any(Exception.class));
+    }
 
 }
