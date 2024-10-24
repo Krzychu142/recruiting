@@ -15,6 +15,7 @@ import com.krzysiek.recruiting.model.RefreshToken;
 import com.krzysiek.recruiting.model.User;
 import com.krzysiek.recruiting.repository.RefreshTokenRepository;
 import com.krzysiek.recruiting.repository.UserRepository;
+import com.krzysiek.recruiting.service.IEmailService;
 import io.jsonwebtoken.JwtException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
@@ -33,13 +34,13 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final JWTService jwtService;
-    private final EmailService emailService;
+    private final IEmailService emailService;
     private final String clientApplicationAddress;
     private final ThrowCorrectException throwCorrectException;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserMapper userMapper;
 
-    public AuthenticationService(PasswordEncoder passwordEncoder, UserRepository userRepository, JWTService jwtService, EmailService emailService, @Value("${client.application.address}") String clientApplicationAddress, ThrowCorrectException throwCorrectException, RefreshTokenRepository refreshTokenRepository, UserMapper userMapper) {
+    public AuthenticationService(PasswordEncoder passwordEncoder, UserRepository userRepository, JWTService jwtService, IEmailService emailService, @Value("${client.application.address}") String clientApplicationAddress, ThrowCorrectException throwCorrectException, RefreshTokenRepository refreshTokenRepository, UserMapper userMapper) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.jwtService = jwtService;

@@ -1,6 +1,7 @@
 package com.krzysiek.recruiting.service.implementation;
 
 import com.krzysiek.recruiting.dto.EmailDTO;
+import com.krzysiek.recruiting.service.IEmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,9 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.mail.javamail.JavaMailSender;
 
 
-// TODO: maybe to refactor
 @Service
-public class EmailService {
+public class EmailService implements IEmailService {
 
     private final JavaMailSender javaMailSender;
     private final String errorNotificationEmail;
@@ -27,6 +27,7 @@ public class EmailService {
         this.errorNotificationEmail = errorNotificationEmail;
     }
 
+    @Override
     @Async
     public void sendErrorEmail(Exception ex){
         EmailDTO emailDTO = new EmailDTO(
@@ -39,6 +40,7 @@ public class EmailService {
         sendEmail(emailDTO);
     }
 
+    @Override
     @Async
     public void sendResetPasswordLinkEmail(String confirmedLink, String clientApplicationAddress, String to, Long hoursToExpiration){
         EmailDTO emailDTO = new EmailDTO(
@@ -51,6 +53,7 @@ public class EmailService {
         sendEmail(emailDTO);
     }
 
+    @Override
     @Async
     public void sendConfirmedLinkEmail(String resetPasswordToken, String clientApplicationAddress, String to, Long hoursToExpiration){
         EmailDTO emailDTO = new EmailDTO(

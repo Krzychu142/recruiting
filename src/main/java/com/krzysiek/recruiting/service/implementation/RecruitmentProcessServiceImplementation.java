@@ -12,6 +12,7 @@ import com.krzysiek.recruiting.model.JobDescription;
 import com.krzysiek.recruiting.model.RecruitmentProcess;
 import com.krzysiek.recruiting.repository.RecruitmentProcessRepository;
 import com.krzysiek.recruiting.repository.specyfication.RecruitmentProcessSpecification;
+import com.krzysiek.recruiting.service.IFileService;
 import com.krzysiek.recruiting.service.IJobDescriptionService;
 import com.krzysiek.recruiting.service.IRecruitmentProcessService;
 import com.krzysiek.recruiting.validator.IJobDescriptionServiceValidator;
@@ -41,7 +42,7 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
     private final RecruitmentProcessSortValidator sortValidator;
     private final IRecruitmentProcessServiceValidator recruitmentProcessServiceValidator;
     private final IJobDescriptionServiceValidator jobDescriptionServiceValidator;
-    private final FileService fileService;
+    private final IFileService fileService;
 
     public RecruitmentProcessServiceImplementation(RecruitmentProcessRepository repository,
                                                    ThrowCorrectException throwCorrectException,
@@ -51,7 +52,7 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
                                                    RecruitmentProcessSortValidator sortValidator,
                                                    IRecruitmentProcessServiceValidator recruitmentProcessServiceValidator,
                                                    IJobDescriptionServiceValidator jobDescriptionServiceValidator,
-                                                   FileService fileService) {
+                                                   IFileService fileService) {
         this.recruitmentProcessRepository = repository;
         this.throwCorrectException = throwCorrectException;
         this.jobDescriptionService = jobDescriptionService;

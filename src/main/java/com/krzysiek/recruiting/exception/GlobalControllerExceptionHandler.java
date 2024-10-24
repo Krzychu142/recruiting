@@ -3,7 +3,7 @@ package com.krzysiek.recruiting.exception;
 import com.krzysiek.recruiting.dto.responsDTOs.ErrorResponseDTO;
 import com.krzysiek.recruiting.dto.FieldErrorDTO;
 import com.krzysiek.recruiting.exception.customExceptions.*;
-import com.krzysiek.recruiting.service.implementation.EmailService;
+import com.krzysiek.recruiting.service.IEmailService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ValidationException;
@@ -30,9 +30,9 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalControllerExceptionHandler extends BaseExceptionHandler{
 
-    private final EmailService emailService;
+    private final IEmailService emailService;
 
-    public GlobalControllerExceptionHandler(EmailService emailService) {
+    public GlobalControllerExceptionHandler(IEmailService emailService) {
         this.emailService = emailService;
     }
 
