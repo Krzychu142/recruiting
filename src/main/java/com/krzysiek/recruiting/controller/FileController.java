@@ -4,7 +4,7 @@ import com.krzysiek.recruiting.dto.responsDTOs.BaseResponseDTO;
 import com.krzysiek.recruiting.dto.requestDTOs.DeleteFileRequestDTO;
 import com.krzysiek.recruiting.dto.responsDTOs.LoadAllFileResponseDTO;
 import com.krzysiek.recruiting.enums.FileType;
-import com.krzysiek.recruiting.service.implementation.FileService;
+import com.krzysiek.recruiting.service.IFileService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.core.io.Resource;
@@ -18,9 +18,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/file")
 public class FileController {
 
-    private final FileService fileService;
+    private final IFileService fileService;
 
-    public FileController(FileService fileService) {
+    public FileController(IFileService fileService) {
         this.fileService = fileService;
     }
 

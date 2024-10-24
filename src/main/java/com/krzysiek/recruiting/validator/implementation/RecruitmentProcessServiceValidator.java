@@ -2,7 +2,7 @@ package com.krzysiek.recruiting.validator.implementation;
 
 import com.krzysiek.recruiting.dto.requestDTOs.RecruitmentProcessRequestDTO;
 import com.krzysiek.recruiting.enums.FileType;
-import com.krzysiek.recruiting.service.implementation.FileService;
+import com.krzysiek.recruiting.service.IFileService;
 import com.krzysiek.recruiting.validator.IRecruitmentProcessServiceValidator;
 import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Component;
@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class RecruitmentProcessServiceValidator implements IRecruitmentProcessServiceValidator {
 
-    private final FileService fileService;
+    private final IFileService fileService;
 
-    public RecruitmentProcessServiceValidator(FileService fileService) {
+    public RecruitmentProcessServiceValidator(IFileService fileService) {
         this.fileService = fileService;
     }
 

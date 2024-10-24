@@ -11,7 +11,7 @@ import com.krzysiek.recruiting.mapper.FileMapper;
 import com.krzysiek.recruiting.model.File;
 import com.krzysiek.recruiting.model.User;
 import com.krzysiek.recruiting.repository.FileRepository;
-import com.krzysiek.recruiting.service.StorageService;
+import com.krzysiek.recruiting.service.IFileService;
 import jakarta.transaction.Transactional;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -34,7 +34,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
-public class FileService implements StorageService {
+public class FileService implements IFileService {
 
     private final FileRepository fileRepository;
     private final ThrowCorrectException throwCorrectException;
@@ -156,6 +156,7 @@ public class FileService implements StorageService {
         }
     }
 
+    @Override
     public File getFileById(Long id) {
         try {
             return fileRepository.findById(id).orElseThrow(() -> new StorageFileNotFoundException("File with id " + id + " not found."));
@@ -164,6 +165,7 @@ public class FileService implements StorageService {
         }
     }
 
+    @Override
     public void checkIsFileExistsInDatabaseByIdTypeUserId(Long fileId, FileType fileType) {
         Long loggedInUserId = authenticationService.getLoggedInUserId();
         fileRepository.findByIdAndFileTypeAndUserId(fileId, fileType, loggedInUserId)
