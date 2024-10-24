@@ -1,7 +1,6 @@
 package com.krzysiek.recruiting.service.implementation;
 
 import com.krzysiek.recruiting.dto.JobDescriptionDTO;
-import com.krzysiek.recruiting.dto.responsDTOs.BaseResponseDTO;
 import com.krzysiek.recruiting.dto.requestDTOs.RecruitmentProcessRequestDTO;
 import com.krzysiek.recruiting.dto.RecruitmentProcessDTO;
 import com.krzysiek.recruiting.enums.RecruitmentProcessStatus;
@@ -146,9 +145,17 @@ public class RecruitmentProcessServiceImplementation implements IRecruitmentProc
         }
     }
 
+    @Transactional
     @Override
     public void deleteRecruitmentProcess(Long recruitmentProcessId) {
-
+        try {
+            int result = recruitmentProcessRepository.deleteByIdAndUserId(recruitmentProcessId, authenticationService.getLoggedInUserId());
+            if (result == 0){
+                throw new RecruitmentProcessNotFoundException("Recruitment process with id: " + recruitmentProcessId + " not found or You are not owner of it.");
+            }
+        } catch (Exception ex) {
+            throw throwCorrectException.handleException(ex);
+        }
     }
 
     private RecruitmentProcess getSingleRecruitmentProcessDTO(Long recruitmentProcessId) {

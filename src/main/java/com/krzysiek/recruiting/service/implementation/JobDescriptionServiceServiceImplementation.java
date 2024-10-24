@@ -59,7 +59,7 @@ public class JobDescriptionServiceServiceImplementation implements IJobDescripti
         oldJobDescription.setRequirements(newJobDescriptionDTO.requirements());
         oldJobDescription.setMinRate(newJobDescriptionDTO.minRate());
         oldJobDescription.setMaxRate(newJobDescriptionDTO.maxRate());
-        jobDescriptionRepository.save(oldJobDescription);
+//        jobDescriptionRepository.save(oldJobDescription);
     }
 
     private boolean isJobDescriptionExists(JobDescriptionDTO jobDescriptionDTO) {
