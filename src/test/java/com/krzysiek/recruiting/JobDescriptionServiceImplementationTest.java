@@ -4,6 +4,7 @@ import com.krzysiek.recruiting.dto.JobDescriptionDTO;
 import com.krzysiek.recruiting.enums.ContractType;
 import com.krzysiek.recruiting.enums.WorkLocation;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
+import com.krzysiek.recruiting.exception.customExceptions.JobDescriptionNotFoundException;
 import com.krzysiek.recruiting.mapper.JobDescriptionMapper;
 import com.krzysiek.recruiting.model.JobDescription;
 import com.krzysiek.recruiting.repository.JobDescriptionRepository;
@@ -17,7 +18,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
@@ -43,7 +46,6 @@ public class JobDescriptionServiceImplementationTest {
     @Test
     void testCreateJobDescription_Success(){
         // Given
-
         Long id = 1L;
         String companyName = "test company name";
         String jobTitle = "test title";
@@ -88,5 +90,23 @@ public class JobDescriptionServiceImplementationTest {
         assertEquals(minRate, result.getMinRate());
         assertEquals(maxRate, result.getMaxRate());
 
+    }
+
+    @Test
+    void testCreateJobDescription_NotFound(){
+        // Given
+        Long searchedId = 2L;
+        String exceptionMessage = "Not found job description";
+        when(jobDescriptionRepository.findById(searchedId)).thenReturn(Optional.empty());
+        JobDescriptionNotFoundException exception = new JobDescriptionNotFoundException(exceptionMessage);
+        when(throwCorrectException.handleException(any(JobDescriptionNotFoundException.class))).thenReturn(exception);
+
+        // When
+        assertThatThrownBy(() -> serviceImplementation.getJobDescriptionById(searchedId))
+                .isInstanceOf(JobDescriptionNotFoundException.class)
+                .hasMessage(exceptionMessage);
+        // Then
+        verify(jobDescriptionRepository, times(1)).findById(searchedId);
+        verify(throwCorrectException, times(1)).handleException(any(JobDescriptionNotFoundException.class));
     }
 }
