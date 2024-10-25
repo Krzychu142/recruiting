@@ -59,14 +59,14 @@ public class AuthenticationController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@Valid @RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO) {
+    public ResponseEntity<BaseResponseDTO> logout(@Valid @RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO) {
         authenticationService.logout(refreshTokenRequestDTO.refreshToken());
-        return ResponseEntity.ok("Successfully logged out.");
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponseDTO("Successfully logged out"));
     }
 
     @PostMapping("/logout-all-devices")
-    public ResponseEntity<String> logoutAllDevices(@RequestHeader("Authorization") String accessToken) {
+    public ResponseEntity<BaseResponseDTO> logoutAllDevices(@RequestHeader("Authorization") String accessToken) {
         authenticationService.logoutAllDevices(accessToken);
-        return ResponseEntity.ok("Successfully logged out from all devices.");
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponseDTO("Successfully logged out from all devices."));
     }
 }
