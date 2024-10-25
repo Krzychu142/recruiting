@@ -7,9 +7,9 @@ import com.krzysiek.recruiting.model.RecruitmentProcess;
 import com.krzysiek.recruiting.model.User;
 import com.krzysiek.recruiting.model.JobDescription;
 import com.krzysiek.recruiting.model.File;
-import com.krzysiek.recruiting.service.implementation.JobDescriptionServiceServiceImplementation;
+import com.krzysiek.recruiting.service.IFileService;
+import com.krzysiek.recruiting.service.IJobDescriptionService;
 import com.krzysiek.recruiting.service.implementation.UserService;
-import com.krzysiek.recruiting.service.implementation.FileService;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -22,10 +22,10 @@ public abstract class RecruitmentProcessMapper {
     protected UserService userService;
 
     @Autowired
-    protected FileService fileService;
+    protected IFileService fileService;
 
     @Autowired
-    protected JobDescriptionServiceServiceImplementation jobDescriptionServiceServiceImplementation;
+    protected IJobDescriptionService jobDescriptionServiceImplementation;
 
     @Mapping(source = "userId", target = "user", qualifiedByName = "mapUser")
     @Mapping(source = "jobDescriptionId", target = "jobDescription", qualifiedByName = "mapJobDescription")
@@ -46,7 +46,7 @@ public abstract class RecruitmentProcessMapper {
 
     @Named("mapJobDescription")
     protected JobDescription mapJobDescription(Long jobDescriptionId) {
-        return jobDescriptionServiceServiceImplementation.getJobDescriptionById(jobDescriptionId);
+        return jobDescriptionServiceImplementation.getJobDescriptionById(jobDescriptionId);
     }
 
     @Named("mapCv")
