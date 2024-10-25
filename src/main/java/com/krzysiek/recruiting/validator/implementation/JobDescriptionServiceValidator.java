@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.EnumSet;
 
 @Component
-public class JobDescriptionServiceServiceValidator implements IJobDescriptionServiceValidator {
+public class JobDescriptionServiceValidator implements IJobDescriptionServiceValidator {
     @Override
     public void validateJobDescriptionDTO(JobDescriptionDTO jobDescriptionDTO) {
         if (EnumSet.of(WorkLocation.HYBRID, WorkLocation.ON_SITE).contains(jobDescriptionDTO.workLocation())
