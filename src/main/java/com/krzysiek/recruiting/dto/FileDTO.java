@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FileDTO{
+    private Long id;
     private String name;
     private Long userId;
     private String extension;
