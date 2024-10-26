@@ -4,6 +4,7 @@ import com.krzysiek.recruiting.dto.JobDescriptionDTO;
 import com.krzysiek.recruiting.enums.ContractType;
 import com.krzysiek.recruiting.enums.WorkLocation;
 import com.krzysiek.recruiting.exception.ThrowCorrectException;
+import com.krzysiek.recruiting.exception.customExceptions.JobDescriptionAlreadyExistsException;
 import com.krzysiek.recruiting.exception.customExceptions.JobDescriptionNotFoundException;
 import com.krzysiek.recruiting.mapper.JobDescriptionMapper;
 import com.krzysiek.recruiting.model.JobDescription;
@@ -93,7 +94,7 @@ public class JobDescriptionServiceImplementationTest {
     }
 
     @Test
-    void testCreateJobDescription_NotFound(){
+    void testGetJobDescriptionById_NotFound(){
         // Given
         Long searchedId = 2L;
         String exceptionMessage = "Not found job description";
@@ -108,5 +109,41 @@ public class JobDescriptionServiceImplementationTest {
         // Then
         verify(jobDescriptionRepository, times(1)).findById(searchedId);
         verify(throwCorrectException, times(1)).handleException(any(JobDescriptionNotFoundException.class));
+    }
+
+    @Test
+    void testCreateJobDescription_AlreadyExists(){
+        // Given
+        String companyName = "test company name";
+        String jobTitle = "test title";
+        String requirements = "test requirements";
+        String exceptionMessage = "Job already exists.";
+
+
+        JobDescriptionDTO jobDescriptionDTO = new JobDescriptionDTO(
+                null,
+                companyName,
+                jobTitle,
+                null,
+                null,
+                null,
+                requirements,
+                null,
+                null
+        );
+
+        when(jobDescriptionRepository.existsByCompanyNameAndJobTitleAndRequirements(companyName, jobTitle, requirements)).thenReturn(true);
+        JobDescriptionAlreadyExistsException exception = new JobDescriptionAlreadyExistsException(exceptionMessage);
+        when(throwCorrectException.handleException(any(JobDescriptionAlreadyExistsException.class))).thenReturn(exception);
+
+        // When
+        assertThatThrownBy(() -> serviceImplementation.createJobDescription(jobDescriptionDTO))
+                .isInstanceOf(JobDescriptionAlreadyExistsException.class)
+                .hasMessage(exceptionMessage);
+
+        // Then
+        verify(jobDescriptionRepository, times(1)).existsByCompanyNameAndJobTitleAndRequirements(companyName, jobTitle, requirements);
+        verify(throwCorrectException, times(1)).handleException(any(JobDescriptionAlreadyExistsException.class));
+
     }
 }
