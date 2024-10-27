@@ -57,7 +57,7 @@
 							"query": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrdXN0b3N6MTQyQGdtYWlsLmNvbSIsImV4cCI6MTcyOTk2Nzg3OSwidHlwZSI6IkxPTkdfVEVSTSJ9.3DX2mPQq83SXJtBDJS8BqDAYlgMN1A5lyc124qJKZIQ"
+									"value": ""
 								}
 							]
 						}
@@ -121,7 +121,7 @@
 							"query": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrdXN0b3N6MTQyQGdtYWlsLmNvbSIsImV4cCI6MTcyOTk2ODAyNywidHlwZSI6IkxPTkdfVEVSTSJ9.KEGfWUGpugQDfbGfc27WOh0aBFLnWcjx_sBfMcMl23o"
+									"value": ""
 								}
 							]
 						}
@@ -194,7 +194,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrdXN0b3N6MTQyQGdtYWlsLmNvbSIsImV4cCI6MTcyODU4NzE3NCwicm9sZSI6IlVTRVIifQ.PH5tZR7UtVtOMVm35VoogPC7Y7kwcx-8JN1UPx9sMyc",
+									"value": "",
 									"type": "string"
 								}
 							]
@@ -478,7 +478,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrdXN0b3N6MTQyQGdtYWlsLmNvbSIsImV4cCI6MTcyOTA0MDc2MywidHlwZSI6IkFDQ0VTUyIsInJvbGUiOiJVU0VSIn0.KUAXAk-HcSSkcMkGecrlKKdWXZWA-cLuiP2f3cBn-O8",
+									"value": "",
 									"type": "string"
 								}
 							]
