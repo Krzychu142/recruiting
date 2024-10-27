@@ -1,0 +1,593 @@
+{
+	"info": {
+		"_postman_id": "536d95b7-2f40-44e5-9073-efc416717b52",
+		"name": "recruiting",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25495510"
+	},
+	"item": [
+		{
+			"name": "authentication",
+			"item": [
+				{
+					"name": "/register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"\",\r\n    \"password\": \"\",\r\n    \"confirmedPassword\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/authentication/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"authentication",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/confirm-email?token=",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/authentication/confirm-email?token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrdXN0b3N6MTQyQGdtYWlsLmNvbSIsImV4cCI6MTcyOTk2Nzg3OSwidHlwZSI6IkxPTkdfVEVSTSJ9.3DX2mPQq83SXJtBDJS8BqDAYlgMN1A5lyc124qJKZIQ",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"authentication",
+								"confirm-email"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/send-reset-password-link",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/authentication/send-reset-password-link",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"authentication",
+								"send-reset-password-link"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/reset-password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"\",\r\n    \"confirmedPassword\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/authentication/reset-password?token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJrdXN0b3N6MTQyQGdtYWlsLmNvbSIsImV4cCI6MTcyOTk2ODAyNywidHlwZSI6IkxPTkdfVEVSTSJ9.KEGfWUGpugQDfbGfc27WOh0aBFLnWcjx_sBfMcMl23o",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"authentication",
+								"reset-password"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"\",\r\n    \"password\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/authentication/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"authentication",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/refresh-token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"refreshToken\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/authentication/refresh-token",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"authentication",
+								"refresh-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"refreshToken\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/authentication/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"authentication",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/logout-all-devices",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/authentication/logout-all-devices",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"authentication",
+								"logout-all-devices"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "recruitment",
+			"item": [
+				{
+					"name": "getAllRecruitmentProcesses",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/recruitment?sort-by=status&sort-direction=ASC&cv-id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"recruitment"
+							],
+							"query": [
+								{
+									"key": "page-number",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "sort-by",
+									"value": "status"
+								},
+								{
+									"key": "sort-direction",
+									"value": "ASC"
+								},
+								{
+									"key": "status",
+									"value": "TO_SEND",
+									"disabled": true
+								},
+								{
+									"key": "cv-id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createRecruitmentProcess",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"jobDescriptionDTO\": {\r\n        \"companyName\": \"TEST TEST TEST\",\r\n        \"jobTitle\": \"Software Developer\",\r\n        \"companyAddress\": \"123 Tech Street\",\r\n        \"workLocation\": \"ON_SITE\",\r\n        \"contractType\": \"EMPLOYMENT_CONTRACT\",\r\n        \"requirements\": \"Proven experience in Java and Spring Framework.\",\r\n        // \"minRate\": 4000.00,\r\n        \"maxRate\": 11000.00\r\n    },\r\n    \"dateOfApplication\": \"2024-10-22\",\r\n    \"processEndDate\": \"2024-12-01\",\r\n    \"hasRecruitmentTask\": false,\r\n    \"cvId\": 1,\r\n    // \"recruitmentTaskStatus\": \"PENDING\",\r\n    \"taskDeadline\": \"2024-11-01\",\r\n    \"evaluationDeadline\": \"2024-11-15\",\r\n    \"status\": \"TO_SEND\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/recruitment",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"recruitment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "editRecruitmentProcess",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 6,\r\n    \"jobDescriptionDTO\": {\r\n        \"id\": 7,\r\n        \"companyName\": \"newName3\",\r\n        \"jobTitle\": \"XYZ\",\r\n        \"companyAddress\": \"123 Tech Street\",\r\n        \"workLocation\": \"ON_SITE\",\r\n        \"contractType\": \"EMPLOYMENT_CONTRACT\",\r\n        \"requirements\": \"Proven experience in Java and Spring Framework.\",\r\n        \"minRate\": 4000.00,\r\n        \"maxRate\": 11000.00\r\n    },\r\n    \"dateOfApplication\": \"2024-10-22\",\r\n    \"processEndDate\": \"2024-12-01\",\r\n    \"hasRecruitmentTask\": false,\r\n    \"cvId\": 1,\r\n    // \"recruitmentTaskStatus\": \"PENDING\",\r\n    \"taskDeadline\": \"2024-11-01\",\r\n    \"evaluationDeadline\": \"2024-11-15\",\r\n    \"status\": \"TO_SEND\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/recruitment",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"recruitment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteRecruitmentProcess",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/recruitment?id=6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"recruitment"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "6"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "files",
+			"item": [
+				{
+					"name": "resource",
+					"item": [
+						{
+							"name": "getFileById",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/file/resource?id=1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"file",
+										"resource"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "delete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fileId\": 2,\r\n    \"fileType\": \"CV\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/file",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"file"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "loadAll",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/file?page-number=0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"file"
+							],
+							"query": [
+								{
+									"key": "page-number",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "storage",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "postman-cloud:///1ef8a4d1-f7ac-4870-995f-f6c5c40832de"
+								},
+								{
+									"key": "fileType",
+									"value": "CV",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/file",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"file"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
