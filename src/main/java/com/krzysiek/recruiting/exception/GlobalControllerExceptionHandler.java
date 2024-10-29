@@ -147,6 +147,11 @@ public class GlobalControllerExceptionHandler extends BaseExceptionHandler{
         return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.NOT_FOUND));
     }
 
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUserAlreadyExistsException(UserAlreadyExistsException ex, HttpServletRequest servletRequest) {
+        return handleException(getErrorResponseDTO(ex, servletRequest, HttpStatus.CONFLICT));
+    }
+
     @ExceptionHandler(Exception.class)
     // request for more information about exception
     public ResponseEntity<ErrorResponseDTO> handleGlobalException(Exception ex, WebRequest request, HttpServletRequest servletRequest) {
