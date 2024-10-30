@@ -12,13 +12,10 @@ import com.krzysiek.recruiting.mapper.RecruitmentProcessMapper;
 import com.krzysiek.recruiting.model.JobDescription;
 import com.krzysiek.recruiting.model.RecruitmentProcess;
 import com.krzysiek.recruiting.repository.RecruitmentProcessRepository;
-import com.krzysiek.recruiting.service.IFileService;
 import com.krzysiek.recruiting.service.IJobDescriptionService;
 import com.krzysiek.recruiting.service.implementation.AuthenticationService;
 import com.krzysiek.recruiting.service.implementation.RecruitmentProcessServiceImplementation;
-import com.krzysiek.recruiting.validator.IJobDescriptionServiceValidator;
 import com.krzysiek.recruiting.validator.IRecruitmentProcessServiceValidator;
-import com.krzysiek.recruiting.validator.implementation.RecruitmentProcessSortValidator;
 import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,16 +50,7 @@ public class RecruitmentProcessServiceImplementationTest {
     private AuthenticationService authenticationService;
 
     @Mock
-    private RecruitmentProcessSortValidator sortValidator;
-
-    @Mock
     private IRecruitmentProcessServiceValidator recruitmentProcessServiceValidator;
-
-    @Mock
-    private IJobDescriptionServiceValidator jobDescriptionServiceValidator;
-
-    @Mock
-    private IFileService fileService;
 
     @InjectMocks
     private RecruitmentProcessServiceImplementation recruitmentProcessService;
